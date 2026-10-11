@@ -74,3 +74,7 @@
 - AuditDatabaseInitializerTests (contenedor propio postgres:17-alpine, como la RDS): base vacía → roles sin privilegios elevados y esquema; segunda ejecución conserva datos y cambia contraseñas (la antigua deja de valer); lector sin INSERT (42501); UPDATE/DELETE de eventos rechazados.
 - API prevista: AuditDatabaseInitializer.InicializarAsync(adminConnectionString, writerPassword, readerPassword, ct).
 - Verificación: falla solo por compilación (CS0103).
+
+## 2026-10-11 · 001-migracion-aws · T011 hecha
+- RegistroIntegracionTests (colección audit-postgres): mismo mensaje dos veces → 1 evento; 20 eventos en 2 invocaciones paralelas → integridad verificada para cada reporte. Añadido Amazon.Lambda.TestUtilities 4.2.0 a IntegrationTests.
+- Verificación: falla solo por compilación (Auditoria.Lambda sin tipos).

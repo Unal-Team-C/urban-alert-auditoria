@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T011
+tarea_actual: T012
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T011: tests/IntegrationTests/Auditoria/RegistroIntegracionTests.cs (RegistroHandler + AuditStore reales; duplicado y 20 eventos en 2 tareas paralelas).
+T012: implementar src/Application/Auditoria/EventBridgeReporteCreado.cs (+ EventoInvalidoException) para que pase T005.
 
 ## Contexto de trabajo
 
