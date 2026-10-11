@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+**/.idea/
+**/.vs/
+urban-alert-auditoria/tests/
+UrbanAlert/backend/UrbanAlert.Reportes/tests/
+**/node_modules/

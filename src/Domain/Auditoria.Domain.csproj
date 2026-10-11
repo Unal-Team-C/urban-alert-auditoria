@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- El .csproj (y por tanto el ensamblado, Auditoria.Domain.dll) lleva el prefijo Auditoria.
+       para no chocar con el proyecto "Domain" de UrbanAlert.Reportes, que entra en el mismo
+       grafo de restore/publish a través de la referencia a su Application.csproj. El código
+       sigue viviendo en el namespace Domain. -->
+
+
+</Project>

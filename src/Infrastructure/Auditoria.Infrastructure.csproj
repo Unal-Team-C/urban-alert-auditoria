@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Auditoria.Domain.csproj" />
+    <ProjectReference Include="..\Application\Auditoria.Application.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- StatusCodes (Microsoft.AspNetCore.Http) y IConfiguration vienen del framework compartido;
+         esta biblioteca no es un host web, pero reutiliza estos tipos igual que el resto de la plataforma. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="4.0.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.11" />
+    <PackageReference Include="Npgsql" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Persistencia\Migraciones\001_audit_store.sql" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

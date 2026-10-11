@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Auditoria.Domain.csproj" />
+    <!-- Contrato de eventos (ReporteCreadoEvent) del microservicio Reportes. Requiere que
+         UrbanAlert.Reportes esté clonado como hermano de este repo: ../UrbanAlert/backend/UrbanAlert.Reportes. -->
+    <ProjectReference Include="..\..\..\UrbanAlert\backend\UrbanAlert.Reportes\src\Application\Application.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

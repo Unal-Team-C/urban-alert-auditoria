@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/deploy/">
+    <File Path="deploy/docker/Dockerfile" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/API/Auditoria.API.csproj" />
+    <Project Path="src/Application/Auditoria.Application.csproj" />
+    <Project Path="src/Domain/Auditoria.Domain.csproj" />
+    <Project Path="src/Infrastructure/Auditoria.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/IntegrationTests/IntegrationTests.csproj" />
+    <Project Path="tests/UnitTests/UnitTests.csproj" />
+  </Folder>
+</Solution>

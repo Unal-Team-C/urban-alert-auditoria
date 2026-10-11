@@ -1,0 +1,45 @@
+# Nombre de proyecto explícito: varios servicios del workspace guardan su docker-compose.yml
+# en una carpeta llamada "docker/", y Compose usa ese nombre de carpeta como project name por
+# defecto. Sin esto, dos stacks distintos comparten namespace y Compose puede confundir sus
+# contenedores/servicios entre sí (ver incidente: recreó urbanalert-reportes-postgres al traer
+# este stack arriba).
+name: urbanalert-auditoria
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: urbanalert-auditoria-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${AUDITORIA_DB_NAME:-urbanalert_auditoria}
+      POSTGRES_USER: ${AUDITORIA_DB_USER:?Falta AUDITORIA_DB_USER en deploy/docker/.env}
+      POSTGRES_PASSWORD: ${AUDITORIA_DB_PASSWORD:?Falta AUDITORIA_DB_PASSWORD en deploy/docker/.env}
+    ports:
+      - "5433:5432"
+    volumes:
+      - urbanalert-auditoria-postgres-data:/var/lib/postgresql/data
+
+  auditoria:
+    build:
+      # Contexto = sources/: Application referencia UrbanAlert/backend/UrbanAlert.Reportes/src/Application
+      # como hermano de este repo (urban-alert-auditoria). Ver deploy/docker/Dockerfile.
+      context: ../../..
+      dockerfile: urban-alert-auditoria/deploy/docker/Dockerfile
+    container_name: urbanalert-auditoria-api
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      Autenticacion__ModoDesarrollo: "true"
+      ConnectionStrings__AuditWriter: Host=postgres;Port=5432;Database=${AUDITORIA_DB_NAME:-urbanalert_auditoria};Username=${AUDITORIA_DB_USER:?Falta AUDITORIA_DB_USER en deploy/docker/.env};Password=${AUDITORIA_DB_PASSWORD:?Falta AUDITORIA_DB_PASSWORD en deploy/docker/.env}
+      ConnectionStrings__AuditReader: Host=postgres;Port=5432;Database=${AUDITORIA_DB_NAME:-urbanalert_auditoria};Username=${AUDITORIA_DB_USER:?Falta AUDITORIA_DB_USER en deploy/docker/.env};Password=${AUDITORIA_DB_PASSWORD:?Falta AUDITORIA_DB_PASSWORD en deploy/docker/.env}
+      # Solo auditoria y su postgres viven en este compose; CorePostgres (lectura de "Reportes")
+      # y RabbitMq apuntan a infraestructura de otros servicios y se configuran por fuera.
+      ConnectionStrings__CorePostgres: ""
+      RabbitMq__Enabled: "false"
+    ports:
+      - "5040:8080"
+
+volumes:
+  urbanalert-auditoria-postgres-data:
