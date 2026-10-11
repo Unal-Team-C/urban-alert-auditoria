@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T023
+tarea_actual: T024
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T023: infra/servicio (3 funciones dotnet10, mapeo SQS con concurrencia 2 y fallos parciales), pruebas y lockfile.
+T024: infra/eventos (regla urban-alert-auditoria-reporte-creado en el bus, destino → cola, política de la cola), pruebas y lockfile.
 
 ## Contexto de trabajo
 

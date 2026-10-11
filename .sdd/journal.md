@@ -128,3 +128,8 @@
 - infra/base/tests/base.tftest.hcl (mock_provider): protección y copia final por defecto, allow_destroy, RDS privada/cifrada/PG17/7 días/maestro gestionado, subnet group en todas las subredes, SG de RDS solo desde -lambda, colas (redrive 5, DLQ 14 días, visibilidad, SSE, nombres), precondición de visibilidad, roles por función con secretos mínimos y SQS solo en registro, cadenas con TLS y pool 2, prefijo obligatorio.
 - Lockfile con hashes linux_amd64, linux_arm64 y darwin_arm64.
 - Verificación: terraform test → 7 passed, 0 failed.
+
+## 2026-10-11 · 001-migracion-aws · T023 hecha
+- infra/servicio: 3 aws_lambda_function (dotnet10, x86_64, handlers de §7.4, VPC, logging_config a su grupo, etiqueta Commit, variables de §7.3 con solo ARN de secretos; API sin concurrencia reservada), aws_lambda_event_source_mapping (lote 10, ventana 5 s, maximum_concurrency 2, ReportBatchItemFailures), precondición de conexiones (pool × (límite de cuenta + 2 + 1) ≤ 40 → 26), salidas.
+- Pruebas: runtime/VPC/handlers/timeouts/etiquetas; entorno sin contraseñas y secretos por función; mapeo; presupuesto de conexiones (falla con 30 de límite); timeout de la API < 30 s. Lockfile de 3 plataformas (mismo que base; init -lockfile=readonly OK).
+- Verificación: validate Success; terraform test 5/5; fmt sin diferencias.
