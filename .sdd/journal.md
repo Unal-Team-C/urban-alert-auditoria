@@ -133,3 +133,7 @@
 - infra/servicio: 3 aws_lambda_function (dotnet10, x86_64, handlers de §7.4, VPC, logging_config a su grupo, etiqueta Commit, variables de §7.3 con solo ARN de secretos; API sin concurrencia reservada), aws_lambda_event_source_mapping (lote 10, ventana 5 s, maximum_concurrency 2, ReportBatchItemFailures), precondición de conexiones (pool × (límite de cuenta + 2 + 1) ≤ 40 → 26), salidas.
 - Pruebas: runtime/VPC/handlers/timeouts/etiquetas; entorno sin contraseñas y secretos por función; mapeo; presupuesto de conexiones (falla con 30 de límite); timeout de la API < 30 s. Lockfile de 3 plataformas (mismo que base; init -lockfile=readonly OK).
 - Verificación: validate Success; terraform test 5/5; fmt sin diferencias.
+
+## 2026-10-11 · 001-migracion-aws · T024 hecha
+- infra/eventos: aws_cloudwatch_event_rule urban-alert-auditoria-reporte-creado en el bus (ARN por variable, patrón source/detail-type exactos), aws_cloudwatch_event_target → cola (sobre completo, sin transformador), aws_sqs_queue_policy (solo events.amazonaws.com con aws:SourceArn = la regla). Variables con validación del ARN del bus y del prefijo de la regla.
+- Verificación: init -lockfile=readonly, validate, terraform test 3/3, fmt sin diferencias.

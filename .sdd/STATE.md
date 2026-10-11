@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T024
+tarea_actual: T025
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T024: infra/eventos (regla urban-alert-auditoria-reporte-creado en el bus, destino → cola, política de la cola), pruebas y lockfile.
+T025: infra/rutas (integración AWS_PROXY 2.0, 2 rutas GET NONE, permiso limitado), pruebas y lockfile.
 
 ## Contexto de trabajo
 
