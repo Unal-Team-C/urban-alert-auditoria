@@ -95,3 +95,7 @@
 - AuditDatabaseInitializer.InicializarAsync: CREATE/ALTER ROLE audit_writer/audit_reader (LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE, contraseña escapada) y 001_audit_store.sql como recurso embebido, en una transacción.
 - Ajuste de T010: el cambio de contraseña se comprueba por el hash de pg_authid (el pg_hba de la imagen confía en conexiones locales).
 - Verificación local (Podman, Testcontainers por el socket): AuditDatabaseInitializerTests 4/4 con --filter; la suite completa da 'Connection reset by peer' intermitentes al arrancar varios contenedores (también en las pruebas existentes, no relacionado con el cambio). Se confirmará en el job test de CI.
+
+## 2026-10-11 · 001-migracion-aws · T016 hecha
+- src/Lambda: Arranque (entorno + SecretosConexion + consola según Logging:Console, AddInfrastructure, RabbitMQ desactivado, LambdaSerializer), RegistroHandler (lote en serie, persistir + archivar, log por evento, fallos parciales; inválidos con su motivo), InitHandler (admin de RDS desde Init:AdminSecretArn + host/base/TLS de la cadena del escritor; errores solo con tipo o SQLSTATE; {"ok":true}).
+- Verificación: build 0 errores; UnitTests 54/54; IntegrationTests RegistroIntegracionTests 2/2 y existentes 5/5 (Podman, por clase).

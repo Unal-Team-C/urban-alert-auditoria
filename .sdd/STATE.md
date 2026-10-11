@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T016
+tarea_actual: T017
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T016: src/Lambda (Arranque, RegistroHandler, InitHandler) para que pasen T006 y T011.
+T017: comprobar el entorno local (imagen de deploy/docker en Development, /health, URN de MassTransit sin cambios).
 
 ## Contexto de trabajo
 
