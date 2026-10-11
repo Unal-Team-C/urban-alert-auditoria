@@ -16,3 +16,10 @@
 
 ## 2026-10-11 · 001-migracion-aws · La regla la crea este repo
 - La consola no deja crear la regla sin un destino existente: el usuario decide que este repo cree la regla `urban-alert-auditoria-reporte-creado` con la cola como destino (RF-002 resuelto). La política del rol necesita gestión de reglas `urban-alert-auditoria-*`.
+
+## 2026-10-11 · 001-migracion-aws · Spec aprobada
+- El usuario aprueba la spec («adelante») y confirma la política `github-actions-urban-alert-auditoria` adjunta al rol. Fase plan.
+
+## 2026-10-11 · 001-migracion-aws · Plan redactado
+- plan.md: 3 Lambdas `dotnet10` (api ASP.NET Core hosting, registro SQS, init), 2 .zip deterministas; 4 stacks base/servicio/eventos/rutas en `auditoria/`; RDS PG17 t4g.micro; SQS+DLQ, mapeo concurrencia 2; regla en stack `eventos` aplicado tras el init.
+- Decisiones clave: D-003 contrato del evento copiado (la referencia al proyecto hermano no existe en CI), D-006 `Autenticacion:Modo=Ninguna`, D-007 `Gateway:ExigirClave=false` + `PathBase=/api/v1` (AWS_PROXY no reescribe rutas). research.md con runtime y versiones.

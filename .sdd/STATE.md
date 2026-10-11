@@ -6,13 +6,13 @@
      estado_tarea: - | en_progreso | hecha | bloqueada -->
 
 feature_activa: 001-migracion-aws
-fase: specify
+fase: plan
 tarea_actual: -
 estado_tarea: -
 
 ## Siguiente paso
 
-Obtener la aprobación de spec.md (sin marcadores) y que el usuario adjunte la política github-actions-urban-alert-auditoria con gestión de reglas; después /sdd-plan.
+Revisar y aprobar plan.md con el usuario → /sdd-tasks.
 
 ## Contexto de trabajo
 
@@ -23,4 +23,4 @@ Obtener la aprobación de spec.md (sin marcadores) y que el usuario adjunte la p
 
 ## Bloqueos / preguntas abiertas
 
-- Política del rol de GitHub con permisos de reglas (pendiente de que el usuario la adjunte).
+- ninguno

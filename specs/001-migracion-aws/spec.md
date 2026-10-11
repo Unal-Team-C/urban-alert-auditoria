@@ -1,7 +1,7 @@
 # Especificación: Migración del Servicio de Auditoria a AWS Lambda
 
 - **ID**: 001-migracion-aws
-- **Estado**: borrador <!-- borrador | aclarada | aprobada | implementada -->
+- **Estado**: aprobada <!-- borrador | aclarada | aprobada | implementada -->
 - **Creada**: 2026-10-11
 - **Entrada original**: "Ok now we must migrate the service to aws, follow the README in urban-alert/infrastructure. This service must be migrated to a lambda tell me if it has a database. Multimedia, geoespacial, reportes, usuarios and the network itself (check the urban-alert-plataforma repo in the aws migration folder) to understand how it's deployed. There is already a deployed amazon event bridge that replaces the rabbitmq". Decisiones del usuario en la conversación: base RDS propia; se elimina la autorización por reporte (sin acceso a la base de Reportes); sin Cognito («at the moment it should register only transactions in reportes»); se despliegan consumidor **y** API; la regla de EventBridge de Auditoria, la cola SQS y su conexión con la Lambda las crea este repo (la consola no permite crear la regla sin un destino ya existente). Fuentes en `fuentes/`: README de `UrbanAlert/infrastructure`, README y guía de integración de `urban-alert-plataforma`. Referencias de práctica: `Urban-Alert-multimedia` (spec 002, Lambda), `urban-alert-reportes` (spec 001, RDS propio y publicación en EventBridge).
 
