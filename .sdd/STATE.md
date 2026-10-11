@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T007
+tarea_actual: T008
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T007: tests/UnitTests/Auditoria/ModoNubeTests.cs (WebApplicationFactory con Autenticacion:Modo=Ninguna, Gateway:ExigirClave=false, Gateway:PathBase=/api/v1, fuera de Development).
+T008: prueba del host de Lambda con un APIGatewayHttpApiV2ProxyRequest (riesgo R-7).
 
 ## Contexto de trabajo
 

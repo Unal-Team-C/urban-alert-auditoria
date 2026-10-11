@@ -57,3 +57,7 @@
 ## 2026-10-11 · 001-migracion-aws · T006 hecha
 - RegistroHandlerTests: lote mixto (inválido + store que lanza → exactamente esos messageId en BatchItemFailures, el resto se persiste y archiva), lote sin errores, log Information por evento con EventId/ReportId/MessageId, error con MessageId para mensajes inválidos.
 - Verificación: falla solo por compilación (namespace Auditoria.Lambda sin tipos).
+
+## 2026-10-11 · 001-migracion-aws · T007 hecha
+- ModoNubeTests (Mvc.Testing 10.0.12): historial con y sin prefijo /api/v1 → 200 sin token ni CorePostgres; integridad 200; limit=0 → 400 sin llamar al store; configuración por defecto sin cabecera → 403; modo Cognito sin token → 401 (con ExigirClave=false); modo desconocido no arranca.
+- Verificación (copia temporal sin los tests de T005/T006, que aún no compilan): 5 fallan como se espera (modos inexistentes); pasan 403 por defecto y 'no arranca'.
