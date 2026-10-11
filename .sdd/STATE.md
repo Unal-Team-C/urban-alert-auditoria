@@ -8,11 +8,11 @@
 feature_activa: 001-migracion-aws
 fase: implement
 tarea_actual: T033
-estado_tarea: hecha
+estado_tarea: bloqueada
 
 ## Siguiente paso
 
-T033: tras el merge del PR #1 (decisión del usuario), seguir el run de Provision en main (gh run list/view --log-failed), corregir con commits pequeños; después scripts/crear-reporte-y-auditar.sh <gateway> -n 20 y segundo Provision sin cambios.
+T033: esperar el merge del PR #1 (decisión del usuario); luego seguir el primer Provision en main y corregir con commits pequeños; después crear-reporte-y-auditar.sh -n 20 y un segundo Provision sin cambios.
 
 ## Contexto de trabajo
 
