@@ -8,11 +8,11 @@
 feature_activa: 001-migracion-aws
 fase: implement
 tarea_actual: T032
-estado_tarea: en_progreso
+estado_tarea: bloqueada
 
 ## Siguiente paso
 
-T032: comprobación completa local; después pedir permiso para push + PR.
+T032: comprobaciones locales en verde (ver journal). Falta el permiso del usuario para publicar la rama aws-provisioning (git push -u origin aws-provisioning) y abrir el PR hacia main; tras el merge, T033 (primer Provision).
 
 ## Contexto de trabajo
 
@@ -30,4 +30,4 @@ T032: comprobación completa local; después pedir permiso para push + PR.
 
 ## Bloqueos / preguntas abiertas
 
-- ninguno
+- T032: permiso del usuario para publicar la rama y abrir el PR. Después, el merge (decisión del usuario) lanza el primer Provision (T033).
