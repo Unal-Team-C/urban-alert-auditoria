@@ -155,3 +155,7 @@
 ## 2026-10-11 · 001-migracion-aws · T028 hecha
 - scripts/crear-reporte-y-auditar.sh <gateway> [-n N]: crea N reportes (JSON, rango de Bogotá), espera ≤ 60 s (AUDIT_WAIT_S) el evento reporte.creado de cada uno en Auditoria, verifica la integridad y borra los reportes (los registros de auditoría quedan).
 - Verificación: shellcheck sin avisos; sin argumentos muestra el uso y sale 2.
+
+## 2026-10-11 · 001-migracion-aws · T029 hecha
+- provision.yml: push a main, concurrency urban-alert-auditoria-aws sin cancelación, región us-east-2 fija (no hay variables de repo). Job test (setup-dotnet con global.json, unitarias e integración con Testcontainers en el Docker del runner, fmt/validate/test de los 4 stacks con lockfile readonly, scripts/tests/run.sh, actionlint, shellcheck); job package (build-lambda-zips.sh, artefacto con los 2 .zip); job provision (OIDC, check-platform.sh, base → servicio → run-init.sh → eventos → rutas → smoke → resumen con planes y mensajes en la DLQ).
+- Verificación: actionlint sin errores.

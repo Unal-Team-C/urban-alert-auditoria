@@ -1,0 +1,220 @@
+# Provisioning (spec 001, RF-016): every push to main (a merged pull request) tests, packages, provisions and deploys.
+# Order (plan §4.3): tests → packages → platform and bus check → base → servicio → init → eventos → rutas → smoke → summary.
+# The functions run in the private network of the shared platform (Unal-Team-C/urban-alert-plataforma); the API is
+# reachable only through its API Gateway, and the events arrive from the shared EventBridge bus through the service queue.
+name: Provision
+
+on:
+  push:
+    branches: [main]
+
+# Shared with deprovision.yml: runs touching the same infrastructure queue up instead of overlapping (RF-018).
+concurrency:
+  group: urban-alert-auditoria-aws
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: "true"
+  AWS_REGION: us-east-2
+  DOTNET_NOLOGO: "true"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "true"
+
+jobs:
+  test:
+    name: Tests and static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Unit tests
+        run: dotnet test tests/UnitTests/UnitTests.csproj --configuration Release
+
+      # Testcontainers starts PostgreSQL in the runner's Docker.
+      - name: Integration tests
+        run: dotnet test tests/IntegrationTests/IntegrationTests.csproj --configuration Release
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform format
+        run: terraform fmt -check -recursive infra
+
+      - name: Terraform validate and test (mocked providers)
+        run: |
+          for stack in base servicio eventos rutas; do
+            terraform -chdir="infra/$stack" init -backend=false -input=false -lockfile=readonly
+            terraform -chdir="infra/$stack" validate
+            terraform -chdir="infra/$stack" test
+          done
+
+      - name: Script tests (fake aws and curl)
+        run: bash scripts/tests/run.sh
+
+      - name: Lint workflows
+        run: docker run --rm -v "$PWD:/repo" -w /repo docker.io/rhysd/actionlint:1.7.7 -color
+
+      - name: Lint scripts
+        run: docker run --rm -v "$PWD:/mnt" -w /mnt docker.io/koalaman/shellcheck:v0.10.0 scripts/*.sh scripts/tests/*.sh
+
+  package:
+    name: Build the Lambda packages
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build (deterministic .zip files, at most 50 MB each)
+        id: build
+        run: |
+          scripts/build-lambda-zips.sh build | tee build.log
+          echo "lines=$(grep '^Package:' build.log | sed 's|.*/||' | paste -sd ';' -)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lambda-packages
+          path: |
+            build/api.zip
+            build/funciones.zip
+          if-no-files-found: error
+          retention-days: 7
+
+    outputs:
+      lines: ${{ steps.build.outputs.lines }}
+
+  provision:
+    name: Provision and deploy
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # OIDC: temporary AWS credentials, no stored keys (RF-018)
+    env:
+      COMMIT: ${{ github.sha }}
+      PLANS: ${{ github.workspace }}/plans.txt
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: lambda-packages
+          path: build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check the shared platform and the EventBridge bus (nothing is changed before this)
+        run: scripts/check-platform.sh
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Apply base (RDS, secrets, queues, security groups, roles, logs)
+        id: base
+        run: |
+          terraform -chdir=infra/base init -input=false
+          terraform -chdir=infra/base plan -input=false -no-color -out=tfplan | tee plan.txt
+          echo "base: $(grep -E '^(Plan:|No changes)' plan.txt)" >> "$PLANS"
+          terraform -chdir=infra/base apply -input=false tfplan
+          echo "dlq_url=$(terraform -chdir=infra/base output -raw dlq_url)" >> "$GITHUB_OUTPUT"
+
+      - name: Apply servicio (Lambda functions with the packages of this commit, queue → registro)
+        id: servicio
+        run: |
+          terraform -chdir=infra/servicio init -input=false
+          terraform -chdir=infra/servicio plan -input=false -no-color -out=tfplan \
+            -var "paquete_api=$GITHUB_WORKSPACE/build/api.zip" \
+            -var "paquete_funciones=$GITHUB_WORKSPACE/build/funciones.zip" \
+            -var "commit=$COMMIT" | tee plan.txt
+          echo "servicio: $(grep -E '^(Plan:|No changes)' plan.txt)" >> "$PLANS"
+          terraform -chdir=infra/servicio apply -input=false tfplan
+          {
+            echo "init_function=$(terraform -chdir=infra/servicio output -raw init_function_name)"
+            echo "esm_uuid=$(terraform -chdir=infra/servicio output -raw event_source_mapping_uuid)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Initialise the database (roles and schema; init function inside the private network)
+        env:
+          FUNCTION: ${{ steps.servicio.outputs.init_function }}
+        run: scripts/run-init.sh "$FUNCTION"
+
+      - name: Apply eventos (Auditoria rule on the shared bus → service queue)
+        id: eventos
+        run: |
+          terraform -chdir=infra/eventos init -input=false
+          terraform -chdir=infra/eventos plan -input=false -no-color -out=tfplan | tee plan.txt
+          echo "eventos: $(grep -E '^(Plan:|No changes)' plan.txt)" >> "$PLANS"
+          terraform -chdir=infra/eventos apply -input=false tfplan
+          {
+            echo "rule=$(terraform -chdir=infra/eventos output -raw rule_name)"
+            echo "bus=$(sed -n 's/^event_bus_arn *= *"\(.*\)"$/\1/p' infra/eventos/terraform.tfvars)"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Apply rutas (publish the routes in the shared API Gateway)
+        id: rutas
+        run: |
+          terraform -chdir=infra/rutas init -input=false
+          terraform -chdir=infra/rutas plan -input=false -no-color -out=tfplan | tee plan.txt
+          echo "rutas: $(grep -E '^(Plan:|No changes)' plan.txt)" >> "$PLANS"
+          terraform -chdir=infra/rutas apply -input=false tfplan
+          echo "gateway=$(terraform -chdir=infra/rutas output -raw gateway_url)" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke test through the gateway, the queue mapping and the rule
+        env:
+          GATEWAY: ${{ steps.rutas.outputs.gateway }}
+          ESM_UUID: ${{ steps.servicio.outputs.esm_uuid }}
+          RULE: ${{ steps.eventos.outputs.rule }}
+          BUS: ${{ steps.eventos.outputs.bus }}
+          DLQ_URL: ${{ steps.base.outputs.dlq_url }}
+        run: scripts/smoke-gateway-auditoria.sh "$GATEWAY" "$ESM_UUID" "$RULE" "$BUS" "$DLQ_URL"
+
+      - name: Summary
+        if: always()
+        env:
+          GATEWAY: ${{ steps.rutas.outputs.gateway }}
+          PACKAGE_LINES: ${{ needs.package.outputs.lines }}
+          DLQ_URL: ${{ steps.base.outputs.dlq_url }}
+        run: |
+          pending="–"
+          if [ -n "$DLQ_URL" ]; then
+            pending=$(aws sqs get-queue-attributes --queue-url "$DLQ_URL" --attribute-names ApproximateNumberOfMessages \
+              --query 'Attributes.ApproximateNumberOfMessages' --output text 2>/dev/null || echo "–")
+          fi
+          {
+            echo "### Servicio de Auditoria"
+            echo "- Commit: \`$COMMIT\`"
+            echo "- Paquetes: ${PACKAGE_LINES:-–}"
+            if [ -n "$GATEWAY" ]; then
+              echo "- Historial: \`GET $GATEWAY/api/v1/auditoria/reportes/{reportId}\`"
+              echo "- Integridad: \`GET $GATEWAY/api/v1/auditoria/reportes/{reportId}/integridad\`"
+            else
+              echo "- Rutas del gateway: (no disponibles)"
+            fi
+            echo "- Mensajes en la cola de fallidos: $pending"
+            echo
+            echo "Planes:"
+            echo '```'
+            cat "$PLANS" 2>/dev/null || echo "(ninguno)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

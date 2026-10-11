@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T029
+tarea_actual: T030
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T029: .github/workflows/provision.yml (test → paquetes → provision en el orden de §4.3).
+T030: .github/workflows/deprovision.yml (manual, confirmación urban-alert-auditoria; rutas → eventos → servicio → base con allow_destroy → destroy).
 
 ## Contexto de trabajo
 
