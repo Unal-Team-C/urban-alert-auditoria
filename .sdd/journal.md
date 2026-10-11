@@ -99,3 +99,9 @@
 ## 2026-10-11 · 001-migracion-aws · T016 hecha
 - src/Lambda: Arranque (entorno + SecretosConexion + consola según Logging:Console, AddInfrastructure, RabbitMQ desactivado, LambdaSerializer), RegistroHandler (lote en serie, persistir + archivar, log por evento, fallos parciales; inválidos con su motivo), InitHandler (admin de RDS desde Init:AdminSecretArn + host/base/TLS de la cadena del escritor; errores solo con tipo o SQLSTATE; {"ok":true}).
 - Verificación: build 0 errores; UnitTests 54/54; IntegrationTests RegistroIntegracionTests 2/2 y existentes 5/5 (Podman, por clase).
+
+## 2026-10-11 · 001-migracion-aws · T017 hecha
+- Imagen de deploy/docker construida desde la raíz del repo y arrancada en Development con modo de desarrollo: /health 200, /scalar/v1 200, logs JSON de HttpLogging. /auditoria/reportes/{id} sin CorePostgres falla como antes (documentado en el README: la autorización necesita esa cadena); sin cambios de comportamiento local.
+- Hallazgo: HttpLogging registraba 200 en peticiones con excepción no controlada. Fuera de Development se añade UseExceptionHandler dentro del log (500 sin detalles); prueba ErrorDelAlmacen_Responde500SinDetalles.
+- ContratoReportesTests: URN de MassTransit 'urn:message:Application.Reportes.Eventos:ReporteCreadoEvent' sin cambios.
+- Verificación: UnitTests 56/56.

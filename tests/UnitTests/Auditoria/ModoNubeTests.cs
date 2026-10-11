@@ -120,6 +120,21 @@ public sealed class ModoNubeTests
     }
 
     [Fact]
+    public async Task ErrorDelAlmacen_Responde500SinDetalles()
+    {
+        Mock<IAuditStore> store = new();
+        store.Setup(s => s.GetTimelineAsync(It.IsAny<Guid>(), It.IsAny<long>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("Host=db;Password=no-debe-salir"));
+        using WebApplicationFactory<Program> fabrica = Fabrica(ConfiguracionNube, store);
+        using HttpClient cliente = fabrica.CreateClient();
+
+        HttpResponseMessage respuesta = await cliente.GetAsync($"/api/v1/auditoria/reportes/{Guid.NewGuid()}");
+
+        Assert.Equal(HttpStatusCode.InternalServerError, respuesta.StatusCode);
+        Assert.DoesNotContain("no-debe-salir", await respuesta.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public void ModoDesconocido_NoArranca()
     {
         Dictionary<string, string?> configuracion = new(ConfiguracionNube) { ["Autenticacion:Modo"] = "Abierto" };

@@ -68,6 +68,13 @@ if (!string.IsNullOrWhiteSpace(pathBase))
     app.UsePathBase(pathBase);
 app.UseRouting();
 app.UseHttpLogging();
+// Dentro del log de peticiones, para que una excepción quede registrada como 500 y no con el código por defecto.
+if (!app.Environment.IsDevelopment())
+    app.UseExceptionHandler(manejador => manejador.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        await context.Response.WriteAsJsonAsync(new { message = "Error interno del servicio de auditoría." });
+    }));
 
 if (modoDesarrollo)
     app.Logger.LogWarning(

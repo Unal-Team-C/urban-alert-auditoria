@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T017
+tarea_actual: T018
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T017: comprobar el entorno local (imagen de deploy/docker en Development, /health, URN de MassTransit sin cambios).
+T018: scripts/build-lambda-zips.sh (publish linux-x64 framework-dependent de src/API y src/Lambda → build/api.zip y build/funciones.zip deterministas; falla si > 50 MB).
 
 ## Contexto de trabajo
 
