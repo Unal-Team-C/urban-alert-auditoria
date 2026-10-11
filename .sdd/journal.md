@@ -40,3 +40,8 @@
 ## 2026-10-11 · 001-migracion-aws · T002 hecha
 - Proyecto src/Lambda (Amazon.Lambda.Core 3.3.0, SQSEvents 3.0.1, Serialization.SystemTextJson 3.0.1); AWSSDK.SecretsManager 4.0.100.14 y AWSSDK.S3 4.0.0 → 4.0.103.4 (Core alineado; quita el aviso NU1901 de Core 4.0.0); AspNetCoreServer.Hosting 2.2.1; TestUtilities 4.2.0. Core 3.4.0 y TestUtilities 4.3.0 descartadas por tener < 2 semanas.
 - Verificación: build 0 errores; UnitTests 24/24.
+
+## 2026-10-11 · 001-migracion-aws · T003 hecha
+- infra/bootstrap: github-auditoria-policy.json (copia de la adjuntada) y README (recursos compartidos, política propia, AWS_ROLE_ARN es secreto de la organización y no hay variables de repo → región fija en los workflows).
+- Desviación registrada en plan D-010: la API no reserva concurrencia (límite de cuenta de 10, como en Multimedia).
+- Verificación: JSON válido (json.tool); sin secretos.

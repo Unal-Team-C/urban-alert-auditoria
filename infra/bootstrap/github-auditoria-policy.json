@@ -1,0 +1,58 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AuditoriaQueues",
+      "Effect": "Allow",
+      "Action": [
+        "sqs:CreateQueue",
+        "sqs:DeleteQueue",
+        "sqs:GetQueueAttributes",
+        "sqs:SetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:TagQueue",
+        "sqs:UntagQueue",
+        "sqs:ListQueueTags"
+      ],
+      "Resource": "arn:aws:sqs:us-east-2:348364742283:urban-alert-auditoria-*"
+    },
+    {
+      "Sid": "AuditoriaEventSourceMapping",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateEventSourceMapping",
+        "lambda:GetEventSourceMapping",
+        "lambda:UpdateEventSourceMapping",
+        "lambda:DeleteEventSourceMapping",
+        "lambda:ListEventSourceMappings",
+        "lambda:TagResource",
+        "lambda:ListTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AuditoriaRule",
+      "Effect": "Allow",
+      "Action": [
+        "events:PutRule",
+        "events:DeleteRule",
+        "events:DescribeRule",
+        "events:EnableRule",
+        "events:DisableRule",
+        "events:PutTargets",
+        "events:RemoveTargets",
+        "events:ListTargetsByRule",
+        "events:TagResource",
+        "events:UntagResource",
+        "events:ListTagsForResource"
+      ],
+      "Resource": "arn:aws:events:us-east-2:348364742283:rule/urban-alert-bus-eventos/urban-alert-auditoria-*"
+    },
+    {
+      "Sid": "DescribeSharedEventBus",
+      "Effect": "Allow",
+      "Action": "events:DescribeEventBus",
+      "Resource": "arn:aws:events:us-east-2:348364742283:event-bus/urban-alert-bus-eventos"
+    }
+  ]
+}

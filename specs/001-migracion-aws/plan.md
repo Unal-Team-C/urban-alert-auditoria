@@ -229,7 +229,7 @@ Las cadenas de conexión de los secretos llevan `SSL Mode=Require;GSS Encryption
 
 | Función | Handler | Memoria / timeout | Concurrencia |
 |---|---|---|---|
-| `urban-alert-auditoria-api` | `Auditoria.API` (assembly ejecutable) | 512 MB / 15 s | reservada 10 |
+| `urban-alert-auditoria-api` | `Auditoria.API` (assembly ejecutable) | 512 MB / 15 s | sin reservar (límite de cuenta, D-010) |
 | `urban-alert-auditoria-registro` | `Auditoria.Lambda::Auditoria.Lambda.RegistroHandler::ManejarAsync` | 512 MB / 30 s | ≤ 2 por el mapeo |
 | `urban-alert-auditoria-init` | `Auditoria.Lambda::Auditoria.Lambda.InitHandler::ManejarAsync` | 512 MB / 60 s | sin límite (la invoca solo Provision) |
 
@@ -282,6 +282,7 @@ Las cadenas de conexión de los secretos llevan `SSL Mode=Require;GSS Encryption
 ### D-010: RDS como la de Reportes
 - **Decisión**: PostgreSQL 17, `db.t4g.micro`, 20→50 GB gp3, una zona, 7 días de copias, `manage_master_user_password`, protección contra borrado y copia final.
 - **Motivo**: es la decisión del usuario (RDS propia), tiene el coste mínimo y sigue un patrón ya probado. Conexiones: 2 × 2 (registro) + 10 × 2 (api) + 2 (init) = 26 ≤ 40 (RNF-002).
+- **Ajuste (T003, 2026-10-11)**: la cuenta tiene, como supone Multimedia (su D-008), el límite de 10 ejecuciones concurrentes de las cuentas nuevas, y Lambda exige dejar 10 sin reservar: la API **no reserva concurrencia**. Su tope real es el de la cuenta (10), así que el cálculo de conexiones no cambia. Si se sube el límite a ≥ 20, se puede reservar 10.
 
 ### D-011: Logs
 - **Decisión**: se usa el formateador JSON de consola de .NET (`Logging__Console__FormatterName=json`) en las tres funciones, y `HttpLogging` en la API con método, ruta, código y duración, sin cabeceras ni cuerpos, como Reportes. El registro deja un log por evento con `EventId`, `ReportId` y `MessageId`.

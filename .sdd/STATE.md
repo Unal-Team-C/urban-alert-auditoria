@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T003
+tarea_actual: T004
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T003: infra/bootstrap/README.md y github-auditoria-policy.json (la política que el usuario adjuntó).
+T004: infra/INVENTARIO.md con los recursos por stack (§4.2 del plan), de arranque y externos.
 
 ## Contexto de trabajo
 
