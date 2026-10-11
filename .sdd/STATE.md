@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T014
+tarea_actual: T015
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T014: src/Infrastructure/Configuracion/SecretosConexion.cs (fuente de configuración ConnectionStrings:<X>SecretArn) y uso en Program.cs.
+T015: AuditDatabaseInitializer (roles + 001_audit_store.sql embebido, una transacción) y pruebas de integración de T010.
 
 ## Contexto de trabajo
 

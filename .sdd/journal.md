@@ -86,3 +86,7 @@
 ## 2026-10-11 · 001-migracion-aws · T013 hecha
 - Program.cs: Autenticacion:Modo (Cognito | Ninguna; ModoAutenticacion en Infrastructure), Cognito solo obligatorio en modo Cognito, ModoDesarrollo incompatible con Ninguna, AddAWSLambdaHosting(HttpApi), HttpLogging (método, ruta, código, duración, CombineLogs), UsePathBase + UseRouting, filtro X-Urban-Gateway-Key condicionado a Gateway:ExigirClave (por defecto true). Cognito en AgregarCognito sin cambios de lógica. AutenticacionAbiertaHandler y SinAutorizacionService; DI elige el servicio de autorización por modo. appsettings.json con las claves nuevas (valores locales) y HttpLoggingMiddleware en Information.
 - Verificación (copia temporal sin tests de T006/T009): UnitTests 46/46 (ModoNube, ApiLambdaHost, existentes).
+
+## 2026-10-11 · 001-migracion-aws · T014 hecha
+- SecretosConexion: IConfigurationSource que lee ConnectionStrings:<X>SecretArn de las fuentes anteriores, obtiene connection_string una vez y la expone como ConnectionStrings:<X>; errores sin el contenido del secreto. Program.cs la añade justo tras CreateBuilder.
+- Verificación (copia temporal sin RegistroHandlerTests): UnitTests 50/50.

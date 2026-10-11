@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using API.Autenticacion;
 using Infrastructure;
+using Infrastructure.Configuracion;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+// Nube: cadenas de conexión desde Secrets Manager si llega su ARN (plan D-008); en local no hace nada.
+builder.Configuration.AddSecretosConexion();
 string? issuer = builder.Configuration["Cognito:Issuer"];
 string? appClientId = builder.Configuration["Cognito:AppClientId"];
 
