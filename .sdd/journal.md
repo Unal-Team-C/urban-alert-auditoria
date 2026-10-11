@@ -78,3 +78,7 @@
 ## 2026-10-11 · 001-migracion-aws · T011 hecha
 - RegistroIntegracionTests (colección audit-postgres): mismo mensaje dos veces → 1 evento; 20 eventos en 2 invocaciones paralelas → integridad verificada para cada reporte. Añadido Amazon.Lambda.TestUtilities 4.2.0 a IntegrationTests.
 - Verificación: falla solo por compilación (Auditoria.Lambda sin tipos).
+
+## 2026-10-11 · 001-migracion-aws · T012 hecha
+- EventBridgeReporteCreado.Leer (source/detail-type exactos, detail objeto, deserialización con CodigosEnum.ConfigurarMensajeria, ids no vacíos, estado definido, fecha) y EventoInvalidoException.
+- Verificación (copia temporal sin los tests de T006/T009): EventBridgeReporteCreadoTests + existentes 25/25.

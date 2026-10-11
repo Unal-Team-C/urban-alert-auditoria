@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T012
+tarea_actual: T013
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T012: implementar src/Application/Auditoria/EventBridgeReporteCreado.cs (+ EventoInvalidoException) para que pase T005.
+T013: modos de nube en Program.cs (Autenticacion:Modo, Gateway:ExigirClave, Gateway:PathBase, AddAWSLambdaHosting, HttpLogging), AutenticacionAbiertaHandler, SinAutorizacionService.
 
 ## Contexto de trabajo
 
