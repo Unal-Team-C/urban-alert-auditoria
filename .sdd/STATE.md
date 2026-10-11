@@ -6,13 +6,13 @@
      estado_tarea: - | en_progreso | hecha | bloqueada -->
 
 feature_activa: 001-migracion-aws
-fase: plan
-tarea_actual: -
+fase: tasks
+tarea_actual: T001
 estado_tarea: -
 
 ## Siguiente paso
 
-Revisar y aprobar plan.md con el usuario → /sdd-tasks.
+Aprobar tasks.md con el usuario → /sdd-implement (empezar por T001: copiar contrato del evento y quitar la referencia al repo hermano).
 
 ## Contexto de trabajo
 

@@ -23,3 +23,9 @@
 ## 2026-10-11 · 001-migracion-aws · Plan redactado
 - plan.md: 3 Lambdas `dotnet10` (api ASP.NET Core hosting, registro SQS, init), 2 .zip deterministas; 4 stacks base/servicio/eventos/rutas en `auditoria/`; RDS PG17 t4g.micro; SQS+DLQ, mapeo concurrencia 2; regla en stack `eventos` aplicado tras el init.
 - Decisiones clave: D-003 contrato del evento copiado (la referencia al proyecto hermano no existe en CI), D-006 `Autenticacion:Modo=Ninguna`, D-007 `Gateway:ExigirClave=false` + `PathBase=/api/v1` (AWS_PROXY no reescribe rutas). research.md con runtime y versiones.
+
+## 2026-10-11 · 001-migracion-aws · Plan aprobado
+- El usuario aprueba el plan («Adelante»), confirma el contrato de D-003 y la forma de llamar por el gateway (D-007).
+
+## 2026-10-11 · 001-migracion-aws · tasks.md generado
+- 34 tareas: preparación 4, pruebas 7, núcleo 14, integración 5, pulido 4. Cobertura completa de RF/RNF.

@@ -1,7 +1,7 @@
 # Plan técnico: Migración del Servicio de Auditoria a AWS Lambda
 
 - **Spec**: ./spec.md
-- **Estado**: borrador <!-- borrador | aprobado -->
+- **Estado**: aprobado <!-- borrador | aprobado -->
 - **Fecha**: 2026-10-11
 
 ## 1. Resumen técnico
