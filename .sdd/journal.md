@@ -113,3 +113,8 @@
 ## 2026-10-11 · 001-migracion-aws · T019 hecha
 - infra/base: versions (TF >= 1.10, aws ~> 6.0, random ~> 3.6), backend auditoria/base.tfstate con use_lockfile, proveedor con etiquetas (Service=auditoria, Stack=base), variables con validaciones (prefijo, backups ≥ 7, DLQ ≥ 14 días, visibilidad), tfvars, network.tf (SSM de la plataforma; SG -lambda con salida 443 y 5432 solo al SG -rds; SG -rds con entrada 5432 solo desde -lambda; subnet group en todas las subredes privadas). .terraform/ en .gitignore.
 - Verificación: terraform 1.16.5 init -backend=false + validate → Success.
+
+## 2026-10-11 · 001-migracion-aws · T020 hecha
+- rds.tf: PG 17 db.t4g.micro, gp3 20→50, una zona, privada, cifrada, backups según variable, manage_master_user_password, deletion_protection = !allow_destroy, copia final con sufijo.
+- secrets.tf: random_password writer/reader (keepers db_password_version), secretos urban-alert-auditoria-db-writer/-reader con username/password/host/port/dbname/connection_string (SSL Require, GSS off, pool 2), recovery 0.
+- Verificación: validate → Success.

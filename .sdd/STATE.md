@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T020
+tarea_actual: T021
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T020: infra/base/rds.tf y secrets.tf (RDS PG17 t4g.micro y secretos -db-writer/-db-reader con connection_string).
+T021: infra/base sqs.tf, iam.tf, logs.tf, outputs.tf.
 
 ## Contexto de trabajo
 
