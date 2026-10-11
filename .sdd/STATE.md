@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T022
+tarea_actual: T023
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T022: infra/base/tests/base.tftest.hcl con mock_provider y lockfile con 3 plataformas.
+T023: infra/servicio (3 funciones dotnet10, mapeo SQS con concurrencia 2 y fallos parciales), pruebas y lockfile.
 
 ## Contexto de trabajo
 

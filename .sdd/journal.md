@@ -123,3 +123,8 @@
 - sqs.tf: cola -eventos (SSE-SQS, 4 días, visibilidad 180 s con precondición ≥ 6 × timeout del registro, redrive a la DLQ con maxReceiveCount 5) y -eventos-dlq (14 días, redrive allow solo desde la principal).
 - iam.tf: roles -api/-registro/-init con políticas en línea -runtime (ENI, solo sus secretos —api: reader; registro: writer; init: los dos + maestro de RDS—, su grupo de logs; registro además SQS sobre su cola). logs.tf: grupos /aws/lambda/... 30 días. outputs.tf sin contraseñas.
 - Verificación: validate → Success; fmt -check sin diferencias.
+
+## 2026-10-11 · 001-migracion-aws · T022 hecha
+- infra/base/tests/base.tftest.hcl (mock_provider): protección y copia final por defecto, allow_destroy, RDS privada/cifrada/PG17/7 días/maestro gestionado, subnet group en todas las subredes, SG de RDS solo desde -lambda, colas (redrive 5, DLQ 14 días, visibilidad, SSE, nombres), precondición de visibilidad, roles por función con secretos mínimos y SQS solo en registro, cadenas con TLS y pool 2, prefijo obligatorio.
+- Lockfile con hashes linux_amd64, linux_arm64 y darwin_arm64.
+- Verificación: terraform test → 7 passed, 0 failed.
