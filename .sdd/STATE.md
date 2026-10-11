@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T004
+tarea_actual: T005
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T004: infra/INVENTARIO.md con los recursos por stack (§4.2 del plan), de arranque y externos.
+T005: tests/UnitTests/Auditoria/EventBridgeReporteCreadoTests.cs (sobre de EventBridge → ReporteCreadoEvent); debe fallar solo por compilación.
 
 ## Contexto de trabajo
 

@@ -45,3 +45,7 @@
 - infra/bootstrap: github-auditoria-policy.json (copia de la adjuntada) y README (recursos compartidos, política propia, AWS_ROLE_ARN es secreto de la organización y no hay variables de repo → región fija en los workflows).
 - Desviación registrada en plan D-010: la API no reserva concurrencia (límite de cuenta de 10, como en Multimedia).
 - Verificación: JSON válido (json.tool); sin secretos.
+
+## 2026-10-11 · 001-migracion-aws · T004 hecha
+- infra/INVENTARIO.md: recursos por stack (§4.2), de arranque y ajenos (plataforma, bus, Notificaciones, Reportes).
+- Verificación: cada recurso de §4.2 del plan aparece en su stack.
