@@ -36,3 +36,7 @@
 ## 2026-10-11 · 001-migracion-aws · T001 hecha
 - Contrato copiado (ReporteCreadoEvent, ReporteEventoDto, EstadoReporte; mismos namespaces), sin ProjectReference al repo hermano; global.json (SDK 10.0.401, como Reportes). Dockerfile/compose de deploy/docker con contexto = raíz del repo (antes dependían del hermano; misma forma de uso).
 - Verificación: build de la solución en verde (0 errores) y UnitTests 24/24 en sdk:10.0 (Podman).
+
+## 2026-10-11 · 001-migracion-aws · T002 hecha
+- Proyecto src/Lambda (Amazon.Lambda.Core 3.3.0, SQSEvents 3.0.1, Serialization.SystemTextJson 3.0.1); AWSSDK.SecretsManager 4.0.100.14 y AWSSDK.S3 4.0.0 → 4.0.103.4 (Core alineado; quita el aviso NU1901 de Core 4.0.0); AspNetCoreServer.Hosting 2.2.1; TestUtilities 4.2.0. Core 3.4.0 y TestUtilities 4.3.0 descartadas por tener < 2 semanas.
+- Verificación: build 0 errores; UnitTests 24/24.

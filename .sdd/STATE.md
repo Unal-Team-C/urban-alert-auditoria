@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T002
+tarea_actual: T003
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T002: crear src/Lambda/Auditoria.Lambda.csproj y añadir paquetes Lambda/SecretsManager (versiones de research.md con ≥ 2 semanas); build de la solución.
+T003: infra/bootstrap/README.md y github-auditoria-policy.json (la política que el usuario adjuntó).
 
 ## Contexto de trabajo
 
