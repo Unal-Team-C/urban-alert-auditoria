@@ -65,3 +65,7 @@
 ## 2026-10-11 · 001-migracion-aws · T008 hecha
 - ApiLambdaHostTests: subclase de APIGatewayHttpApiV2ProxyFunction (constructor con IServiceProvider: en FirstRequest el logger es nulo y MarshallRequest falla) traduce un payload 2.0 de stage $default → Path = ruta pública completa, PathBase vacío; esa ruta se envía a la API en modo nube.
 - Verificación (copia temporal): la traducción pasa; la prueba falla en la API por 'Cognito obligatorio' (modos inexistentes), como se espera.
+
+## 2026-10-11 · 001-migracion-aws · T009 hecha
+- SecretosConexionTests: con ARN expone ConnectionStrings:AuditWriter desde connection_string; sin ARN no crea el cliente y conserva la cadena local; secreto sin connection_string (JSON o texto) → InvalidOperationException que nombra la clave y no contiene el secreto.
+- Verificación: falla solo por compilación (Infrastructure.Configuracion no existe).

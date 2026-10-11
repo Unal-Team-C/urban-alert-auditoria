@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T009
+tarea_actual: T010
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T009: tests/UnitTests/Auditoria/SecretosConexionTests.cs (SecretosConexion.AddSecretosConexion(builder, fábrica de IAmazonSecretsManager)).
+T010: tests/IntegrationTests/Auditoria/AuditDatabaseInitializerTests.cs (Testcontainers PostgreSQL vacío).
 
 ## Contexto de trabajo
 
