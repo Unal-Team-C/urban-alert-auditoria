@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T025
+tarea_actual: T026
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T025: infra/rutas (integración AWS_PROXY 2.0, 2 rutas GET NONE, permiso limitado), pruebas y lockfile.
+T026: scripts/check-platform.sh (+ bus), scripts/run-init.sh y pruebas con aws simulado (scripts/tests/run.sh).
 
 ## Contexto de trabajo
 

@@ -137,3 +137,7 @@
 ## 2026-10-11 · 001-migracion-aws · T024 hecha
 - infra/eventos: aws_cloudwatch_event_rule urban-alert-auditoria-reporte-creado en el bus (ARN por variable, patrón source/detail-type exactos), aws_cloudwatch_event_target → cola (sobre completo, sin transformador), aws_sqs_queue_policy (solo events.amazonaws.com con aws:SourceArn = la regla). Variables con validación del ARN del bus y del prefijo de la regla.
 - Verificación: init -lockfile=readonly, validate, terraform test 3/3, fmt sin diferencias.
+
+## 2026-10-11 · 001-migracion-aws · T025 hecha
+- infra/rutas: integración AWS_PROXY 2.0 → función api, rutas GET /api/v1/auditoria/reportes/{reportId} y /integridad (NONE), aws_lambda_permission AllowSharedGatewayAuditoriaRoutes limitado a <exec-arn>/*/GET/api/v1/auditoria/reportes/*; salidas gateway_url y routes.
+- Verificación: init -lockfile=readonly, validate, terraform test 3/3, fmt -check -recursive infra sin diferencias.
