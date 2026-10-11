@@ -1,20 +1,28 @@
 # UrbanAlert.Auditoria
 
-Servicio .NET 10 para auditar mensajes MassTransit de `UrbanAlert.Reportes`. Guarda eventos en PostgreSQL append-only, calcula una cadena SHA-256 global e idempotente por `eventId`, y ofrece API para consultar el historial e integridad.
+Servicio .NET 10 para auditar los eventos de `UrbanAlert.Reportes`: por MassTransit/RabbitMQ en local y por Amazon EventBridge en AWS. Guarda eventos en PostgreSQL append-only, calcula una cadena SHA-256 global e idempotente por `eventId`, y ofrece API para consultar el historial e integridad.
+
+En AWS corre como **funciones Lambda** con su propia RDS PostgreSQL: ver [Despliegue en AWS](#despliegue-en-aws).
 
 ## Estructura de la solución
 
 ```
 src/
   Domain/          Lógica pura: cálculo e integridad del hash de la cadena de auditoría.
-  Application/     DTOs, interfaces de los puertos (IAuditStore, IAuditArchive, IAuditAuthorizationService)
-                    y el mapeo de eventos de Reportes al modelo de auditoría.
-  Infrastructure/   Implementaciones: PostgreSQL (Npgsql), archivado S3 y el consumidor MassTransit.
-  API/             Host ASP.NET Core: controladores, autenticación y Program.cs.
+                    Domain/Reportes: copia del enum EstadoReporte de Reportes (contrato del evento).
+  Application/     DTOs, interfaces de los puertos (IAuditStore, IAuditArchive, IAuditAuthorizationService),
+                    el mapeo de eventos de Reportes al modelo de auditoría y la lectura del sobre de EventBridge.
+                    Application/Reportes/Eventos: copia de ReporteCreadoEvent (mismo namespace que en Reportes).
+  Infrastructure/   Implementaciones: PostgreSQL (Npgsql), inicialización de la base, secretos de conexión,
+                    archivado S3 y el consumidor MassTransit.
+  API/             Host ASP.NET Core: controladores, autenticación y Program.cs (también corre en Lambda).
+  Lambda/          Handlers de las funciones de registro (SQS) e inicialización de la base.
 tests/
   UnitTests/        Pruebas unitarias (mocks, sin dependencias externas).
   IntegrationTests/ Pruebas con PostgreSQL real vía Testcontainers.
-deploy/docker/      Dockerfile de despliegue.
+deploy/docker/      Dockerfile y compose locales.
+infra/              Terraform de AWS (base, servicio, eventos, rutas) y recursos de arranque.
+scripts/            Paquetes de Lambda, comprobaciones, inicialización, humo y prueba de extremo a extremo.
 ```
 
 ## Flujo auditado
@@ -150,3 +158,125 @@ La cobertura seguirá incompleta hasta que los handlers .NET publiquen eventos p
 El archivo de auditoría, la consulta de integridad y el archivado opcional S3 Object Lock están portados. La política de retención y el bucket deben configurarse en AWS; este servicio no crea ni configura el bucket.
 
 El detalle del flujo, el contenido normalizado del evento y las brechas actuales está en [docs/funcionamiento-dotnet.md](docs/funcionamiento-dotnet.md).
+
+## Despliegue en AWS
+
+Cuenta `348364742283`, región `us-east-2`. Spec, plan y decisiones en [specs/001-migracion-aws](specs/001-migracion-aws/); inventario de recursos en [infra/INVENTARIO.md](infra/INVENTARIO.md); recursos de arranque en [infra/bootstrap/README.md](infra/bootstrap/README.md).
+
+El servicio corre en **tres funciones Lambda** (runtime `dotnet10`) en la red privada de la plataforma compartida [`urban-alert-plataforma`](https://github.com/Unal-Team-C/urban-alert-plataforma), con su **propia RDS PostgreSQL 17**. Recibe los eventos de Reportes del **bus de EventBridge** compartido y publica su API **solo** por el API Gateway compartido.
+
+```text
+Reportes ─PutEvents─► bus urban-alert-bus-eventos (manual)
+                        ├─ regla de Notificaciones ─► urban_alert_notificaciones      (no se toca)
+                        └─ regla urban-alert-auditoria-reporte-creado ─► SQS urban-alert-auditoria-eventos ─(5 intentos)─► DLQ
+                                                                          │ lote 10, ≤ 2 invocaciones a la vez
+                                                     Lambda urban-alert-auditoria-registro ─TLS─► RDS (audit_writer)
+Cliente ─HTTPS─► API Gateway ─ GET /api/v1/auditoria/reportes/{id}[/integridad] ─► Lambda urban-alert-auditoria-api ─TLS─► RDS (audit_reader)
+Provision ─► Lambda urban-alert-auditoria-init ─TLS─► RDS (usuario maestro): roles y 001_audit_store.sql
+```
+
+| Stack | Estado | Qué crea |
+|---|---|---|
+| `infra/base` | `auditoria/base.tfstate` | RDS, secretos `-db-writer`/`-db-reader`, colas y DLQ, grupos de seguridad, roles, logs |
+| `infra/servicio` | `auditoria/servicio.tfstate` | Las 3 funciones y la conexión cola → `registro` |
+| `infra/eventos` | `auditoria/eventos.tfstate` | La regla del bus, su destino (la cola) y la política de la cola |
+| `infra/rutas` | `auditoria/rutas.tfstate` | 2 rutas en el gateway compartido y el permiso de invocación |
+
+### Cómo llamar a la API
+
+Por la URL del gateway (salida `gateway_url`, hoy `https://aotsp8k5ad.execute-api.us-east-2.amazonaws.com`), sin token ni cabeceras:
+
+```bash
+curl https://<api-id>.execute-api.us-east-2.amazonaws.com/api/v1/auditoria/reportes/<idReporte>?limit=100
+curl https://<api-id>.execute-api.us-east-2.amazonaws.com/api/v1/auditoria/reportes/<idReporte>/integridad
+```
+
+- Por ahora no hay autenticación de clientes ni autorización por reporte (decisión del usuario, spec RF-007): cualquiera que llegue al gateway consulta cualquier reporte, igual que la API de Reportes. Un reporte sin eventos responde 200 con `items` vacío.
+- Solo esas dos rutas existen: `/health`, Scalar u OpenAPI responden 404 en el gateway.
+- La cabecera `X-Urban-Gateway-Key` no se usa en AWS: con una integración Lambda el gateway no puede añadir cabeceras, y la función solo admite invocaciones del gateway compartido (plan D-007).
+
+### Configuración: local y AWS
+
+Todo lo que cambia en la nube se elige por configuración; sin ella, el comportamiento es el local.
+
+| Clave | Local (por defecto) | AWS |
+|---|---|---|
+| `Autenticacion:Modo` | `Cognito` (con `Autenticacion:ModoDesarrollo` en Development) | `Ninguna`: sin Cognito ni lectura de la tabla `Reportes` |
+| `Gateway:ExigirClave` | `true` (`X-Urban-Gateway-Key`) | `false` |
+| `Gateway:PathBase` | vacío | `/api/v1` (la integración Lambda no reescribe rutas) |
+| `ConnectionStrings:<X>SecretArn` | — | ARN del secreto; `connection_string` se lee al arrancar (`AuditReader` en la API, `AuditWriter` en registro) |
+| `Init:AdminSecretArn` | — | Secreto maestro de RDS (solo la función de init) |
+| `RabbitMq:Enabled` | según entorno | `false` |
+| `Logging:Console:FormatterName` | texto | `json` |
+
+Cada petición deja una línea de log con método, ruta, código y duración (`HttpLogging`), sin cabeceras ni cuerpos; cada evento auditado, una línea con `MessageId`, `EventId` y `ReportId`.
+
+### Evento recibido
+
+El destino de la regla no usa transformador: el cuerpo de cada mensaje SQS es el sobre completo de EventBridge.
+
+```json
+{ "source": "urban-alert.reportes", "detail-type": "ReporteCreado",
+  "detail": { "idEvento": "…", "reporte": { "id": "…", "estado": "REPORTADO", "idCoordenada": "…", "idUsuario": "…", "fecha": "2026-10-11T15:30:00Z" } } }
+```
+
+El registro es el mismo que produce el consumidor de MassTransit (`reporte.creado`, versión 1, `correlationId` nulo). Un mensaje con otro `source` o `detail-type`, o sin los campos obligatorios, no se registra y acaba en la cola de fallidos.
+
+Los eventos publicados mientras la regla no existe (antes del primer Provision o durante un Deprovision) se pierden: EventBridge no los guarda.
+
+### Cola de fallidos
+
+Un mensaje que falla 5 veces pasa a `urban-alert-auditoria-eventos-dlq`, donde se conserva 14 días. El resumen de Provision muestra cuántos hay. Para revisarlos y, corregida la causa, devolverlos a la cola principal (con un usuario con permisos sobre SQS):
+
+```bash
+aws sqs receive-message --queue-url https://sqs.us-east-2.amazonaws.com/348364742283/urban-alert-auditoria-eventos-dlq --max-number-of-messages 10 --visibility-timeout 0
+aws sqs start-message-move-task --source-arn arn:aws:sqs:us-east-2:348364742283:urban-alert-auditoria-eventos-dlq
+```
+
+Reprocesar es seguro: el registro es idempotente por `idEvento`.
+
+### Workflows
+
+| Workflow | Cuándo | Qué hace |
+|---|---|---|
+| [Provision](.github/workflows/provision.yml) | Cada push a `main` | Pruebas unitarias e integración, `terraform fmt/validate/test`, pruebas de scripts, actionlint, shellcheck → paquetes `.zip` deterministas → comprueba plataforma y bus → `base` → `servicio` → init de la base → `eventos` → `rutas` → humo → resumen |
+| [Deprovision](.github/workflows/deprovision.yml) | Solo a mano, escribiendo `urban-alert-auditoria` | `rutas` → `eventos` → `servicio` → `base` (copia final de RDS) |
+
+Comparten el grupo de `concurrency` `urban-alert-auditoria-aws`. Después de un Provision se puede comprobar el flujo completo (crea reportes en Reportes y espera su auditoría; no lo ejecuta Provision porque escribe datos):
+
+```bash
+scripts/crear-reporte-y-auditar.sh https://<api-id>.execute-api.us-east-2.amazonaws.com -n 20
+```
+
+### Restaurar los datos tras reaprovisionar
+
+Procedimiento excepcional, a mano: restaurar `urban-alert-auditoria-final-<run_id>` con `aws rds restore-db-instance-from-db-snapshot` en una instancia temporal y copiar `audit_events` y `audit_chain_state` con `pg_dump`/`pg_restore` desde una máquina dentro de la VPC.
+
+### Costes
+
+Estimación mensual en `us-east-2` con el servicio encendido (730 h):
+
+| Recurso | Mes |
+|---|---|
+| RDS db.t4g.micro, una zona | ~11,7 USD |
+| Almacenamiento gp3 20 GB y copias | ~2,3 USD |
+| Secrets Manager (2 propios + el de RDS) | 1,2 USD |
+| SQS, Lambda, EventBridge, CloudWatch Logs | ~0 (capa gratuita / por uso) |
+| **Total** | **~15,2 USD** |
+
+No incluye la plataforma compartida (~36,6 USD/mes). Desaprovisionado solo queda la copia final de RDS (céntimos).
+
+### Validar en local (Podman, sin instalar nada)
+
+```bash
+DOTNET='podman run --rm -v "$PWD":/w -w /w -v ~/.cache/nuget-podman:/root/.nuget/packages mcr.microsoft.com/dotnet/sdk:10.0 dotnet'
+eval "$DOTNET test tests/UnitTests/UnitTests.csproj"
+TF='podman run --rm -v "$PWD":/w -w /w -v ~/.cache/tf-podman:/cache -e TF_PLUGIN_CACHE_DIR=/cache docker.io/hashicorp/terraform:1.16.5'
+for s in base servicio eventos rutas; do eval "$TF -chdir=infra/$s init -backend=false" && eval "$TF -chdir=infra/$s validate" && eval "$TF -chdir=infra/$s test"; done
+eval "$TF fmt -check -recursive infra"
+bash scripts/tests/run.sh
+podman run --rm -v "$PWD":/repo -w /repo docker.io/rhysd/actionlint:1.7.7
+podman run --rm -v "$PWD":/mnt -w /mnt docker.io/koalaman/shellcheck:v0.10.0 scripts/*.sh scripts/tests/*.sh
+```
+
+`apply`, `plan` contra el estado real y `destroy` solo se ejecutan desde los workflows.

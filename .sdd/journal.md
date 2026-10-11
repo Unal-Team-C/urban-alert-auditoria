@@ -163,3 +163,7 @@
 ## 2026-10-11 · 001-migracion-aws · T030 hecha
 - deprovision.yml: workflow_dispatch con confirmación urban-alert-auditoria y solo main, misma concurrency, región fija; rutas → eventos → servicio (zips vacíos) → base apply allow_destroy + destroy (copia final con run_id); cada stack vacío se informa y salta; timeout 90 min; resumen.
 - Verificación: actionlint sin errores.
+
+## 2026-10-11 · 001-migracion-aws · T031 hecha
+- README: introducción y estructura actualizadas; sección «Despliegue en AWS» (arquitectura, stacks, cómo llamar a la API, configuración local/AWS, evento recibido, cola de fallidos y reprocesado, workflows, prueba de extremo a extremo, restauración, costes, validación local). docs/funcionamiento-dotnet.md: sección «En AWS». CLAUDE.md: descripción, comandos y gotchas.
+- Verificación: enlaces a plan, inventario y bootstrap; sin secretos (grep).

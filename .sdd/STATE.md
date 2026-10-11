@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T031
+tarea_actual: T032
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T031: README (sección AWS) y CLAUDE.md.
+T032: comprobación completa (UnitTests, IntegrationTests por clase, terraform ×4, fmt, scripts, actionlint, shellcheck); luego pedir permiso al usuario para publicar la rama y abrir el PR.
 
 ## Contexto de trabajo
 
