@@ -23,6 +23,7 @@ public sealed class AuditDatabaseFixture : IAsyncLifetime
     public async Task InitializeAsync()
     {
         await _database.StartAsync();
+        await PostgresListo.EsperarAsync(ConnectionString);
         string schemaPath = Path.Combine(AppContext.BaseDirectory, "Migraciones", "001_audit_store.sql");
         string schema = await File.ReadAllTextAsync(schemaPath);
         await using NpgsqlConnection connection = new(ConnectionString);

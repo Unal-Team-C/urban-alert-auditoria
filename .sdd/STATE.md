@@ -8,11 +8,11 @@
 feature_activa: 001-migracion-aws
 fase: implement
 tarea_actual: T032
-estado_tarea: hecha
+estado_tarea: en_progreso
 
 ## Siguiente paso
 
-T032: comprobación completa (UnitTests, IntegrationTests por clase, terraform ×4, fmt, scripts, actionlint, shellcheck); luego pedir permiso al usuario para publicar la rama y abrir el PR.
+T032: comprobación completa local; después pedir permiso para push + PR.
 
 ## Contexto de trabajo
 

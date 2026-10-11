@@ -15,7 +15,11 @@ public sealed class AuditDatabaseInitializerTests : IAsyncLifetime
         .WithPassword("admin_test")
         .Build();
 
-    public Task InitializeAsync() => _database.StartAsync();
+    public async Task InitializeAsync()
+    {
+        await _database.StartAsync();
+        await PostgresListo.EsperarAsync(_database.GetConnectionString());
+    }
 
     public async Task DisposeAsync() => await _database.DisposeAsync();
 

@@ -167,3 +167,7 @@
 ## 2026-10-11 · 001-migracion-aws · T031 hecha
 - README: introducción y estructura actualizadas; sección «Despliegue en AWS» (arquitectura, stacks, cómo llamar a la API, configuración local/AWS, evento recibido, cola de fallidos y reprocesado, workflows, prueba de extremo a extremo, restauración, costes, validación local). docs/funcionamiento-dotnet.md: sección «En AWS». CLAUDE.md: descripción, comandos y gotchas.
 - Verificación: enlaces a plan, inventario y bootstrap; sin secretos (grep).
+
+## 2026-10-11 · 001-migracion-aws · T032 comprobación local
+- UnitTests 56/56; build 0 errores; terraform test base 7, servicio 5, eventos 3, rutas 3 (todos en verde); fmt, scripts/tests/run.sh, actionlint y shellcheck en verde.
+- Integración: 11/11 en una ejecución completa; otras dos ejecuciones con «Connection reset by peer» intermitentes de la red rootless de Podman (también tras una conexión correcta). Añadido PostgresListo (espera una conexión TCP real antes de usar el contenedor; cubre el reinicio tras initdb de la imagen oficial) en el fixture y en las pruebas del init. Se confirma en el job test de CI (Docker).

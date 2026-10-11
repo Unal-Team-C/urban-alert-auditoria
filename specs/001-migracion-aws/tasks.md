@@ -62,7 +62,7 @@ Dependencias: cada fase depende de la anterior; dentro de una fase se ejecuta en
 ## Fase 5: Pulido
 
 - [x] T031 README (sección AWS: arquitectura, orden, workflows, rutas y cómo llamarlas, configuración de §7.3, formato del evento, DLQ y reprocesado con `start-message-move-task`, costes, restauración) y CLAUDE.md (comandos de validación y gotchas) — archivos: README.md, CLAUDE.md, docs/funcionamiento-dotnet.md — cubre: RF-019, RNF-006 — verifica: cada sección enlaza al plan/inventario; sin secretos
-- [ ] T032 Comprobación completa antes del PR: todas las verificaciones locales de §2 del plan; publicar la rama y abrir el PR (con permiso del usuario) — archivos: (ninguno) — cubre: todos — verifica: suites, `terraform test` ×4, `fmt`, actionlint, shellcheck y `scripts/tests/run.sh` en verde
+- [~] T032 Comprobación completa antes del PR: todas las verificaciones locales de §2 del plan; publicar la rama y abrir el PR (con permiso del usuario) — archivos: (ninguno) — cubre: todos — verifica: suites, `terraform test` ×4, `fmt`, actionlint, shellcheck y `scripts/tests/run.sh` en verde
 - [ ] T033 Tras el merge (decisión del usuario): seguir el primer Provision en `main`, corregir con commits pequeños, y ejecutar `crear-reporte-y-auditar.sh` (MS-001, MS-002); segundo Provision sin cambios (MS-003) — archivos: (según fallos) — cubre: MS-001, MS-002, MS-003 — verifica: Provision en verde ×2; el script termina en 0; DLQ vacía
 - [ ] T034 Deprovision + Provision (a mano, con permiso del usuario) y comprobar que Reportes, Multimedia y Notificaciones siguen respondiendo — archivos: (ninguno) — cubre: MS-004, HU-5 — verifica: ambos workflows en verde; humo de los demás servicios en verde
 
