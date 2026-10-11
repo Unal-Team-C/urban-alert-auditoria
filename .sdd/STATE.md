@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T030
+tarea_actual: T031
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T030: .github/workflows/deprovision.yml (manual, confirmación urban-alert-auditoria; rutas → eventos → servicio → base con allow_destroy → destroy).
+T031: README (sección AWS) y CLAUDE.md.
 
 ## Contexto de trabajo
 

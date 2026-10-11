@@ -57,7 +57,7 @@ Dependencias: cada fase depende de la anterior; dentro de una fase se ejecuta en
 - [x] T027 [P] Humo por el gateway (§4.3 paso 8) y su prueba con `curl`/`aws` simulados — archivos: scripts/smoke-gateway-auditoria.sh, scripts/tests/run.sh, scripts/tests/fixtures/* — cubre: RF-006, RF-016 — verifica: `bash scripts/tests/run.sh` en verde (falla si `/health` llega al servicio o si el mapeo no está `Enabled`); shellcheck sin avisos
 - [x] T028 [P] `crear-reporte-y-auditar.sh <gateway> [-n N]`: crea N reportes en Reportes, espera ≤ 60 s cada evento en Auditoria y comprueba la integridad — archivos: scripts/crear-reporte-y-auditar.sh — cubre: MS-001, MS-002 — verifica: shellcheck sin avisos; sin argumentos muestra el uso y sale ≠ 0
 - [x] T029 `provision.yml` (push a `main`, `concurrency: urban-alert-auditoria-aws` sin cancelación; job `test`; job `paquetes` con artefacto; job `provision` en el orden de §4.3 con resumen) — archivos: .github/workflows/provision.yml — cubre: RF-016, RF-018, RNF-005 — verifica: actionlint sin errores — depende: T018, T022, T023, T024, T025, T026, T027
-- [ ] T030 `deprovision.yml` (manual, confirmación `urban-alert-auditoria`, solo `main`, misma `concurrency`; rutas → eventos → servicio → base `allow_destroy` → destroy; tolera estado vacío) — archivos: .github/workflows/deprovision.yml — cubre: RF-017, RF-018 — verifica: actionlint sin errores — depende: T029
+- [x] T030 `deprovision.yml` (manual, confirmación `urban-alert-auditoria`, solo `main`, misma `concurrency`; rutas → eventos → servicio → base `allow_destroy` → destroy; tolera estado vacío) — archivos: .github/workflows/deprovision.yml — cubre: RF-017, RF-018 — verifica: actionlint sin errores — depende: T029
 
 ## Fase 5: Pulido
 

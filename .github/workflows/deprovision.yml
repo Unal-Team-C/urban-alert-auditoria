@@ -1,0 +1,159 @@
+# Deprovisioning (spec 001, HU-5, RF-017): manual only, with explicit confirmation.
+# Removes the service in reverse order (rutas, eventos, servicio, base; plan §4.4) after a final RDS snapshot.
+# Never touches the shared EventBridge bus, the Notificaciones rule and queue, the shared platform or the bootstrap
+# resources (OIDC, workflow role, state bucket). Events published while the rule does not exist are lost.
+name: Deprovision
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Escribe urban-alert-auditoria para confirmar que quieres eliminar el servicio (queda una copia final de la base)"
+        required: true
+        type: string
+
+concurrency:
+  group: urban-alert-auditoria-aws
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: "true"
+  AWS_REGION: us-east-2
+
+jobs:
+  deprovision:
+    name: Deprovision the service
+    runs-on: ubuntu-latest
+    timeout-minutes: 90 # the function security group waits for Lambda to release its network interfaces
+    permissions:
+      contents: read
+      id-token: write # OIDC: temporary AWS credentials, no stored keys (RF-018)
+    env:
+      SNAPSHOT_SUFFIX: ${{ github.run_id }}
+    steps:
+      - name: Check confirmation
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$CONFIRM" != "urban-alert-auditoria" ]; then
+            echo "::error::Confirmation missing: type urban-alert-auditoria. Nothing was deleted."
+            exit 1
+          fi
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "::error::Run this workflow on main (the AWS role only trusts main). Nothing was deleted."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Destroy routes in the shared API Gateway
+        id: rutas
+        run: |
+          terraform -chdir=infra/rutas init -input=false
+          if [ -z "$(terraform -chdir=infra/rutas state list)" ]; then
+            echo "Routes stack is already empty."
+            echo "result=vacío" >> "$GITHUB_OUTPUT"
+          else
+            terraform -chdir=infra/rutas destroy -input=false -auto-approve
+            echo "result=eliminado" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Destroy the Auditoria rule (the bus and the other rules stay)
+        id: eventos
+        run: |
+          terraform -chdir=infra/eventos init -input=false
+          if [ -z "$(terraform -chdir=infra/eventos state list)" ]; then
+            echo "Events stack is already empty."
+            echo "result=vacío" >> "$GITHUB_OUTPUT"
+          else
+            terraform -chdir=infra/eventos destroy -input=false -auto-approve
+            echo "result=eliminado" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Destroy the Lambda functions and the queue mapping
+        id: servicio
+        run: |
+          terraform -chdir=infra/servicio init -input=false
+          if [ -z "$(terraform -chdir=infra/servicio state list)" ]; then
+            echo "Functions stack is already empty."
+            echo "result=vacío" >> "$GITHUB_OUTPUT"
+          else
+            # Destroying does not upload code, but the variables must still be set: empty placeholder packages.
+            : > "$RUNNER_TEMP/empty.zip"
+            terraform -chdir=infra/servicio destroy -input=false -auto-approve \
+              -var "paquete_api=$RUNNER_TEMP/empty.zip" -var "paquete_funciones=$RUNNER_TEMP/empty.zip" \
+              -var "commit=deprovision"
+            echo "result=eliminado" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Lift the RDS protection and set the final snapshot name
+        id: unprotect
+        run: |
+          terraform -chdir=infra/base init -input=false
+          if [ -z "$(terraform -chdir=infra/base state list)" ]; then
+            echo "Base stack is already empty: nothing to delete."
+            echo "empty=true" >> "$GITHUB_OUTPUT"
+          else
+            terraform -chdir=infra/base apply -input=false -auto-approve \
+              -var allow_destroy=true -var "final_snapshot_suffix=$SNAPSHOT_SUFFIX"
+            echo "empty=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Lambda releases the VPC network interfaces of the deleted functions asynchronously: deleting the function
+      # security group can take 20-40 minutes, and the provider waits for it.
+      - name: Destroy base (a final snapshot of RDS is kept; queues and secrets are deleted)
+        id: base
+        if: steps.unprotect.outputs.empty == 'false'
+        run: |
+          terraform -chdir=infra/base destroy -input=false -auto-approve \
+            -var allow_destroy=true -var "final_snapshot_suffix=$SNAPSHOT_SUFFIX"
+
+      - name: Summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          RUTAS: ${{ steps.rutas.outputs.result }}
+          EVENTOS: ${{ steps.eventos.outputs.result }}
+          SERVICIO: ${{ steps.servicio.outputs.result }}
+          BASE_EMPTY: ${{ steps.unprotect.outputs.empty }}
+          BASE_OUTCOME: ${{ steps.base.outcome }}
+        run: |
+          {
+            echo "### Desaprovisionamiento de Auditoria"
+            echo "- Rutas del gateway: ${RUTAS:-no completado}"
+            echo "- Regla del bus: ${EVENTOS:-no completado} (el bus y la regla de Notificaciones no se tocan)"
+            echo "- Funciones Lambda y mapeo de la cola: ${SERVICIO:-no completado}"
+            if [ "$BASE_EMPTY" = "true" ]; then
+              echo "- Base (RDS, secretos, colas, red, roles): vacío"
+            elif [ "$BASE_OUTCOME" = "success" ]; then
+              echo "- Base (RDS, secretos, colas, red, roles): eliminado"
+              echo "- Copia final de RDS: \`urban-alert-auditoria-final-$SNAPSHOT_SUFFIX\` (restauración: README)"
+            else
+              echo "- Base: no completado"
+            fi
+            echo
+            if [ "$JOB_STATUS" = "success" ]; then
+              echo "Para recrear el servicio: un push a \`main\` (workflow Provision). Los eventos publicados mientras tanto no se auditan."
+            else
+              echo "No se completó: revisa el paso que falló; volver a lanzarlo retoma desde el estado."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -159,3 +159,7 @@
 ## 2026-10-11 · 001-migracion-aws · T029 hecha
 - provision.yml: push a main, concurrency urban-alert-auditoria-aws sin cancelación, región us-east-2 fija (no hay variables de repo). Job test (setup-dotnet con global.json, unitarias e integración con Testcontainers en el Docker del runner, fmt/validate/test de los 4 stacks con lockfile readonly, scripts/tests/run.sh, actionlint, shellcheck); job package (build-lambda-zips.sh, artefacto con los 2 .zip); job provision (OIDC, check-platform.sh, base → servicio → run-init.sh → eventos → rutas → smoke → resumen con planes y mensajes en la DLQ).
 - Verificación: actionlint sin errores.
+
+## 2026-10-11 · 001-migracion-aws · T030 hecha
+- deprovision.yml: workflow_dispatch con confirmación urban-alert-auditoria y solo main, misma concurrency, región fija; rutas → eventos → servicio (zips vacíos) → base apply allow_destroy + destroy (copia final con run_id); cada stack vacío se informa y salta; timeout 90 min; resumen.
+- Verificación: actionlint sin errores.
