@@ -49,3 +49,7 @@
 ## 2026-10-11 · 001-migracion-aws · T004 hecha
 - infra/INVENTARIO.md: recursos por stack (§4.2), de arranque y ajenos (plataforma, bus, Notificaciones, Reportes).
 - Verificación: cada recurso de §4.2 del plan aparece en su stack.
+
+## 2026-10-11 · 001-migracion-aws · T005 hecha
+- EventBridgeReporteCreadoTests: sobre real, estado código/número, igualdad con el registro de MassTransit, source/detail-type ajenos, detalle nulo/vacío/Guid.Empty/estado desconocido, cuerpo no JSON.
+- Verificación: el build de UnitTests falla solo por CS0103/CS0246 (EventBridgeReporteCreado, EventoInvalidoException no existen).

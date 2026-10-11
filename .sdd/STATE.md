@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T005
+tarea_actual: T006
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T005: tests/UnitTests/Auditoria/EventBridgeReporteCreadoTests.cs (sobre de EventBridge → ReporteCreadoEvent); debe fallar solo por compilación.
+T006: tests/UnitTests/Lambda/RegistroHandlerTests.cs (RegistroHandler(IAuditStore, IAuditArchive, ILogger) → ManejarAsync(SQSEvent, ILambdaContext) → SQSBatchResponse).
 
 ## Contexto de trabajo
 
