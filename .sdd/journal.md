@@ -146,3 +146,8 @@
 - scripts/check-platform.sh (contrato SSM completo + describe-event-bus del bus de infra/eventos/terraform.tfvars, mensajes por causa), scripts/run-init.sh (espera, invoca con {}, muestra la cola del log, falla con FunctionError o respuesta distinta de {"ok":true}, sin imprimir la respuesta), scripts/tests/run.sh + test-check-platform.sh (6 casos) + test-run-init.sh (4 casos, comprueba que nada secreto sale).
 - Corrección de T016: InitHandler.ManejarAsync(Stream, ILambdaContext): con un solo parámetro el runtime de .NET lo trata como la entrada.
 - Verificación: scripts/tests/run.sh en verde; shellcheck sin avisos; build 0 errores; UnitTests en verde.
+
+## 2026-10-11 · 001-migracion-aws · T027 hecha
+- scripts/smoke-gateway-auditoria.sh <gateway> <esm-uuid> <regla> <bus> <dlq-url>: historial de un id aleatorio 200 y vacío (con reintentos por arranque en frío), integridad 200, /health y id no GUID → 404, mapeo Enabled, regla ENABLED, DLQ con aviso si tiene mensajes. Nota: el cuerpo usa 'items' (AuditTimeline), no 'eventos' como decía el plan §4.3.
+- scripts/tests/test-smoke.sh: 8 casos con curl/aws simulados.
+- Verificación: scripts/tests/run.sh en verde; shellcheck sin avisos.

@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T027
+tarea_actual: T028
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T027: scripts/smoke-gateway-auditoria.sh y su prueba con curl/aws simulados.
+T028: scripts/crear-reporte-y-auditar.sh <gateway> [-n N] (manual, MS-001/MS-002).
 
 ## Contexto de trabajo
 
