@@ -105,3 +105,7 @@
 - Hallazgo: HttpLogging registraba 200 en peticiones con excepción no controlada. Fuera de Development se añade UseExceptionHandler dentro del log (500 sin detalles); prueba ErrorDelAlmacen_Responde500SinDetalles.
 - ContratoReportesTests: URN de MassTransit 'urn:message:Application.Reportes.Eventos:ReporteCreadoEvent' sin cambios.
 - Verificación: UnitTests 56/56.
+
+## 2026-10-11 · 001-migracion-aws · T018 hecha
+- scripts/build-lambda-zips.sh: publish linux-x64 framework-dependent (sin apphost, ContinuousIntegrationBuild) de src/API → build/api.zip (6,2 MB) y src/Lambda → build/funciones.zip (3,9 MB); fechas y permisos fijos, orden estable; falla si > 50 MB. /build/ en .gitignore.
+- Verificación: dos ejecuciones desde cero en sdk:10.0 dan el mismo sha256 en ambos paquetes; shellcheck sin avisos; el paquete de la API incluye 001_audit_store.sql y runtimeconfig.

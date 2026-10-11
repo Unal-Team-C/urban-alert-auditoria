@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T018
+tarea_actual: T019
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T018: scripts/build-lambda-zips.sh (publish linux-x64 framework-dependent de src/API y src/Lambda → build/api.zip y build/funciones.zip deterministas; falla si > 50 MB).
+T019: infra/base parte 1 (versions, backend auditoria/base.tfstate, providers con etiquetas, variables con validaciones, tfvars, network.tf con SG -lambda/-rds y subnet group).
 
 ## Contexto de trabajo
 
@@ -23,6 +23,8 @@ T018: scripts/build-lambda-zips.sh (publish linux-x64 framework-dependent de src
 
 - Integración local con Podman: `podman run --rm --network host --security-opt label=disable -v /run/user/501/podman/podman.sock:/var/run/docker.sock -e TESTCONTAINERS_RYUK_DISABLED=true -e TESTCONTAINERS_HOST_OVERRIDE=localhost ... dotnet test tests/IntegrationTests`. Con varios contenedores a la vez hay «Connection reset by peer» intermitentes (red de Podman); por clase con `--filter` pasa. CI decide.
 - Mientras haya tests de tareas pendientes que no compilan, verificar en una copia temporal del repo dentro del contenedor (`cp -r /src /w` y borrar esos archivos).
+- Con TESTCONTAINERS_RYUK_DISABLED quedan contenedores `postgres:17-alpine ... -c fsync=off` tras las pruebas: borrarlos (solo esos; `postgres` y `rabbitmq-server` sin fsync son del usuario).
+- `scripts/build-lambda-zips.sh` en el SDK tarda ~10 min la primera vez (apt zip + restore linux-x64); ejecutar en segundo plano.
 - AWS_ROLE_ARN es secreto de la organización; el repo no tiene variables (región fija en workflows). Límite de concurrencia de Lambda de la cuenta: 10 (sin reservas).
 
 ## Bloqueos / preguntas abiertas
