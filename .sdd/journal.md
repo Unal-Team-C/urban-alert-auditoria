@@ -82,3 +82,7 @@
 ## 2026-10-11 · 001-migracion-aws · T012 hecha
 - EventBridgeReporteCreado.Leer (source/detail-type exactos, detail objeto, deserialización con CodigosEnum.ConfigurarMensajeria, ids no vacíos, estado definido, fecha) y EventoInvalidoException.
 - Verificación (copia temporal sin los tests de T006/T009): EventBridgeReporteCreadoTests + existentes 25/25.
+
+## 2026-10-11 · 001-migracion-aws · T013 hecha
+- Program.cs: Autenticacion:Modo (Cognito | Ninguna; ModoAutenticacion en Infrastructure), Cognito solo obligatorio en modo Cognito, ModoDesarrollo incompatible con Ninguna, AddAWSLambdaHosting(HttpApi), HttpLogging (método, ruta, código, duración, CombineLogs), UsePathBase + UseRouting, filtro X-Urban-Gateway-Key condicionado a Gateway:ExigirClave (por defecto true). Cognito en AgregarCognito sin cambios de lógica. AutenticacionAbiertaHandler y SinAutorizacionService; DI elige el servicio de autorización por modo. appsettings.json con las claves nuevas (valores locales) y HttpLoggingMiddleware en Information.
+- Verificación (copia temporal sin tests de T006/T009): UnitTests 46/46 (ModoNube, ApiLambdaHost, existentes).

@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T013
+tarea_actual: T014
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T013: modos de nube en Program.cs (Autenticacion:Modo, Gateway:ExigirClave, Gateway:PathBase, AddAWSLambdaHosting, HttpLogging), AutenticacionAbiertaHandler, SinAutorizacionService.
+T014: src/Infrastructure/Configuracion/SecretosConexion.cs (fuente de configuración ConnectionStrings:<X>SecretArn) y uso en Program.cs.
 
 ## Contexto de trabajo
 
