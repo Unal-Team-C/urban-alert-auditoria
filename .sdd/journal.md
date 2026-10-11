@@ -151,3 +151,7 @@
 - scripts/smoke-gateway-auditoria.sh <gateway> <esm-uuid> <regla> <bus> <dlq-url>: historial de un id aleatorio 200 y vacío (con reintentos por arranque en frío), integridad 200, /health y id no GUID → 404, mapeo Enabled, regla ENABLED, DLQ con aviso si tiene mensajes. Nota: el cuerpo usa 'items' (AuditTimeline), no 'eventos' como decía el plan §4.3.
 - scripts/tests/test-smoke.sh: 8 casos con curl/aws simulados.
 - Verificación: scripts/tests/run.sh en verde; shellcheck sin avisos.
+
+## 2026-10-11 · 001-migracion-aws · T028 hecha
+- scripts/crear-reporte-y-auditar.sh <gateway> [-n N]: crea N reportes (JSON, rango de Bogotá), espera ≤ 60 s (AUDIT_WAIT_S) el evento reporte.creado de cada uno en Auditoria, verifica la integridad y borra los reportes (los registros de auditoría quedan).
+- Verificación: shellcheck sin avisos; sin argumentos muestra el uso y sale 2.

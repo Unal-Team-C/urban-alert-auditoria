@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T028
+tarea_actual: T029
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T028: scripts/crear-reporte-y-auditar.sh <gateway> [-n N] (manual, MS-001/MS-002).
+T029: .github/workflows/provision.yml (test → paquetes → provision en el orden de §4.3).
 
 ## Contexto de trabajo
 
