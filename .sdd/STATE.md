@@ -6,13 +6,13 @@
      estado_tarea: - | en_progreso | hecha | bloqueada -->
 
 feature_activa: 001-migracion-aws
-fase: tasks
-tarea_actual: T001
-estado_tarea: -
+fase: implement
+tarea_actual: T002
+estado_tarea: hecha
 
 ## Siguiente paso
 
-Aprobar tasks.md con el usuario → /sdd-implement (empezar por T001: copiar contrato del evento y quitar la referencia al repo hermano).
+T002: crear src/Lambda/Auditoria.Lambda.csproj y añadir paquetes Lambda/SecretsManager (versiones de research.md con ≥ 2 semanas); build de la solución.
 
 ## Contexto de trabajo
 

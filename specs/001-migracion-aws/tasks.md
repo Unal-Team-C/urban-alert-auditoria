@@ -1,7 +1,7 @@
 # Tareas: Migración del Servicio de Auditoria a AWS Lambda
 
 - **Plan**: ./plan.md
-- **Estado**: borrador <!-- borrador | aprobado -->
+- **Estado**: aprobado <!-- borrador | aprobado -->
 
 Leyenda: `[ ]` pendiente · `[~]` en progreso · `[x]` hecha · `[!]` bloqueada · `[-]` descartada · `[P]` paralelizable
 
@@ -19,7 +19,7 @@ Dependencias: cada fase depende de la anterior; dentro de una fase se ejecuta en
 
 ## Fase 1: Preparación
 
-- [ ] T001 Copiar el contrato del evento (D-003: `ReporteCreadoEvent`, `ReporteEventoDto`, `EstadoReporte` con sus namespaces), quitar la referencia a `UrbanAlert.Reportes` y fijar el SDK (`global.json`, `rollForward: latestPatch`) — archivos: src/Application/Reportes/Eventos/ReporteCreadoEvent.cs, src/Domain/Reportes/EstadoReporte.cs, src/Application/Auditoria.Application.csproj, global.json — cubre: RF-003, RF-020, P8 — verifica: `$DOTNET build UrbanAlert.Auditoria.slnx` en verde sin el repo hermano; `$DOTNET test tests/UnitTests` en verde (pruebas existentes)
+- [x] T001 Copiar el contrato del evento (D-003: `ReporteCreadoEvent`, `ReporteEventoDto`, `EstadoReporte` con sus namespaces), quitar la referencia a `UrbanAlert.Reportes` y fijar el SDK (`global.json`, `rollForward: latestPatch`) — archivos: src/Application/Reportes/Eventos/ReporteCreadoEvent.cs, src/Domain/Reportes/EstadoReporte.cs, src/Application/Auditoria.Application.csproj, global.json — cubre: RF-003, RF-020, P8 — verifica: `$DOTNET build UrbanAlert.Auditoria.slnx` en verde sin el repo hermano; `$DOTNET test tests/UnitTests` en verde (pruebas existentes)
 - [ ] T002 Añadir el proyecto `src/Lambda` (biblioteca, `net10.0`, `GenerateRuntimeConfigurationFiles`) con `Amazon.Lambda.Core`, `Amazon.Lambda.SQSEvents`, `Amazon.Lambda.Serialization.SystemTextJson`, y `AWSSDK.SecretsManager` en Infrastructure, `Amazon.Lambda.AspNetCoreServer.Hosting` en API y `Amazon.Lambda.TestUtilities` en UnitTests (versiones exactas de research.md con ≥ 2 semanas) — archivos: src/Lambda/Auditoria.Lambda.csproj, src/Infrastructure/Auditoria.Infrastructure.csproj, src/API/Auditoria.API.csproj, tests/UnitTests/UnitTests.csproj, UrbanAlert.Auditoria.slnx — cubre: D-001, D-002, P8 — verifica: `$DOTNET build UrbanAlert.Auditoria.slnx` en verde
 - [ ] T003 [P] Documentar el arranque: política `github-auditoria-policy.json` (la que el usuario ya adjuntó), políticas compartidas reutilizadas, OIDC, bucket de estado, bus manual, `AWS_ROLE_ARN` — archivos: infra/bootstrap/README.md, infra/bootstrap/github-auditoria-policy.json — cubre: RF-019 — verifica: `python3 -m json.tool` válido; cada recurso con su dueño, sin secretos
 - [ ] T004 [P] Crear el inventario de recursos por stack, de arranque y externos (plataforma, bus, recursos de Notificaciones como ajenos) — archivos: infra/INVENTARIO.md — cubre: RF-013, RF-014, RF-019 — verifica: cada recurso de §4.2 del plan aparece en su stack

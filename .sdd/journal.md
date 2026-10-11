@@ -29,3 +29,10 @@
 
 ## 2026-10-11 · 001-migracion-aws · tasks.md generado
 - 34 tareas: preparación 4, pruebas 7, núcleo 14, integración 5, pulido 4. Cobertura completa de RF/RNF.
+
+## 2026-10-11 · 001-migracion-aws · Tareas aprobadas
+- El usuario aprueba tasks.md («Adelante»). Empieza la implementación por T001.
+
+## 2026-10-11 · 001-migracion-aws · T001 hecha
+- Contrato copiado (ReporteCreadoEvent, ReporteEventoDto, EstadoReporte; mismos namespaces), sin ProjectReference al repo hermano; global.json (SDK 10.0.401, como Reportes). Dockerfile/compose de deploy/docker con contexto = raíz del repo (antes dependían del hermano; misma forma de uso).
+- Verificación: build de la solución en verde (0 errores) y UnitTests 24/24 en sdk:10.0 (Podman).

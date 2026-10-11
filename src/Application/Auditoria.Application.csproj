@@ -1,10 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <!-- El contrato de eventos de Reportes (ReporteCreadoEvent, EstadoReporte) está copiado en este repo,
+         con los mismos namespaces para conservar el URN de MassTransit (plan D-003). -->
     <ProjectReference Include="..\Domain\Auditoria.Domain.csproj" />
-    <!-- Contrato de eventos (ReporteCreadoEvent) del microservicio Reportes. Requiere que
-         UrbanAlert.Reportes esté clonado como hermano de este repo: ../UrbanAlert/backend/UrbanAlert.Reportes. -->
-    <ProjectReference Include="..\..\..\UrbanAlert\backend\UrbanAlert.Reportes\src\Application\Application.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

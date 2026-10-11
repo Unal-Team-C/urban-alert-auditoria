@@ -21,10 +21,9 @@ services:
 
   auditoria:
     build:
-      # Contexto = sources/: Application referencia UrbanAlert/backend/UrbanAlert.Reportes/src/Application
-      # como hermano de este repo (urban-alert-auditoria). Ver deploy/docker/Dockerfile.
-      context: ../../..
-      dockerfile: urban-alert-auditoria/deploy/docker/Dockerfile
+      # Contexto = raíz del repo: el contrato de eventos de Reportes está copiado en src/ (plan D-003).
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
     container_name: urbanalert-auditoria-api
     restart: unless-stopped
     depends_on:
