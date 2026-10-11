@@ -16,7 +16,11 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton<IAuditStore, AuditStore>();
-        services.AddSingleton<IAuditAuthorizationService, AuditAuthorizationService>();
+        // Cognito (por defecto): autorización por reporte leyendo la tabla "Reportes". Ninguna: sin restricciones (plan D-006).
+        if (ModoAutenticacion.Leer(configuration) == ModoAutenticacion.Ninguna)
+            services.AddSingleton<IAuditAuthorizationService, SinAutorizacionService>();
+        else
+            services.AddSingleton<IAuditAuthorizationService, AuditAuthorizationService>();
         services.AddSingleton<IAuditArchive>(_ => CreateAuditArchive(configuration));
 
         if (configuration.GetValue<bool>("RabbitMq:Enabled"))

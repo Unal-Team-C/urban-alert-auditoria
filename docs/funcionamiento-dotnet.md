@@ -73,3 +73,7 @@ El siguiente paso recomendado es incorporar outbox transaccional en Reportes y c
 ## Configuración
 
 Las cadenas `AuditWriter`, `AuditReader` y `CorePostgres`, Cognito, gateway, RabbitMQ y S3 se detallan en el `README.md` de este proyecto. El consumidor usa `RabbitMq:Queue=q_auditoria_dotnet` y el binding tipado generado por MassTransit.
+
+## En AWS
+
+En AWS el mismo `ReporteCreadoEvent` llega por el bus de EventBridge: la regla `urban-alert-auditoria-reporte-creado` lo entrega a una cola SQS y la función Lambda de registro lo convierte con `EventBridgeReporteCreado` y `DotNetAuditEventFactory` en el mismo registro que produce el consumidor de MassTransit. La API corre en otra función Lambda sin Cognito ni autorización por reporte (`Autenticacion:Modo=Ninguna`). Detalle en la sección «Despliegue en AWS» del `README.md` y en `specs/001-migracion-aws/`.

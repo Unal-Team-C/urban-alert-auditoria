@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Auditoria.Domain.csproj" />
@@ -12,13 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="4.0.0" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.103.4" />
+    <PackageReference Include="AWSSDK.SecretsManager" Version="4.0.100.14" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.11" />
     <PackageReference Include="Npgsql" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="Persistencia\Migraciones\001_audit_store.sql" CopyToOutputDirectory="PreserveNewest" />
+    <!-- La función de init lo lee del ensamblado (AuditDatabaseInitializer), sin depender de rutas del paquete. -->
+    <EmbeddedResource Include="Persistencia\Migraciones\001_audit_store.sql" LogicalName="Infrastructure.Persistencia.Migraciones.001_audit_store.sql" />
   </ItemGroup>
 
   <PropertyGroup>
