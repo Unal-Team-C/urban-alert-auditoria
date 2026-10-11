@@ -61,3 +61,7 @@
 ## 2026-10-11 · 001-migracion-aws · T007 hecha
 - ModoNubeTests (Mvc.Testing 10.0.12): historial con y sin prefijo /api/v1 → 200 sin token ni CorePostgres; integridad 200; limit=0 → 400 sin llamar al store; configuración por defecto sin cabecera → 403; modo Cognito sin token → 401 (con ExigirClave=false); modo desconocido no arranca.
 - Verificación (copia temporal sin los tests de T005/T006, que aún no compilan): 5 fallan como se espera (modos inexistentes); pasan 403 por defecto y 'no arranca'.
+
+## 2026-10-11 · 001-migracion-aws · T008 hecha
+- ApiLambdaHostTests: subclase de APIGatewayHttpApiV2ProxyFunction (constructor con IServiceProvider: en FirstRequest el logger es nulo y MarshallRequest falla) traduce un payload 2.0 de stage $default → Path = ruta pública completa, PathBase vacío; esa ruta se envía a la API en modo nube.
+- Verificación (copia temporal): la traducción pasa; la prueba falla en la API por 'Cognito obligatorio' (modos inexistentes), como se espera.

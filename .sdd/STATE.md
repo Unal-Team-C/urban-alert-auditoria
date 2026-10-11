@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T008
+tarea_actual: T009
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T008: prueba del host de Lambda con un APIGatewayHttpApiV2ProxyRequest (riesgo R-7).
+T009: tests/UnitTests/Auditoria/SecretosConexionTests.cs (SecretosConexion.AddSecretosConexion(builder, fábrica de IAmazonSecretsManager)).
 
 ## Contexto de trabajo
 
