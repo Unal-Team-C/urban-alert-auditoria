@@ -13,3 +13,6 @@
 ## 2026-10-11 · 001-migracion-aws · Spec creada
 - Creada spec 001-migracion-aws: Auditoria a Lambda (registro desde SQS conectada a la regla manual de EventBridge, API abierta por el gateway), RDS propio, sin Cognito ni autorización por reporte. Fuentes copiadas a `fuentes/`; indicaciones técnicas en `notes.md`.
 - Pendiente: nombre de la regla y permisos `events:PutTargets`/`RemoveTargets` (RF-002).
+
+## 2026-10-11 · 001-migracion-aws · La regla la crea este repo
+- La consola no deja crear la regla sin un destino existente: el usuario decide que este repo cree la regla `urban-alert-auditoria-reporte-creado` con la cola como destino (RF-002 resuelto). La política del rol necesita gestión de reglas `urban-alert-auditoria-*`.

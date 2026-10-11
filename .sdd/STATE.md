@@ -6,21 +6,21 @@
      estado_tarea: - | en_progreso | hecha | bloqueada -->
 
 feature_activa: 001-migracion-aws
-fase: clarify
+fase: specify
 tarea_actual: -
 estado_tarea: -
 
 ## Siguiente paso
 
-Resolver RF-002 (nombre de la regla de Auditoria y permisos PutTargets/RemoveTargets) y obtener la aprobación de spec.md; después /sdd-plan.
+Obtener la aprobación de spec.md (sin marcadores) y que el usuario adjunte la política github-actions-urban-alert-auditoria con gestión de reglas; después /sdd-plan.
 
 ## Contexto de trabajo
 
 - Referencias: `../FaaS multimedia/Urban-Alert-multimedia` (patrón Lambda: stacks almacen/base/servicio/rutas, zip determinista, init Lambda), `../Microservicio reportes` (RDS propio, secretos, publica `ReporteCreado` en EventBridge), `../Plataforma compartida AWS` (contrato SSM, docs/integracion.md).
 - Bus `arn:aws:events:us-east-2:348364742283:event-bus/urban-alert-bus-eventos` (manual). Evento: source `urban-alert.reportes`, detail-type `ReporteCreado`, detail `{idEvento, reporte{id, estado, idCoordenada, idUsuario, fecha}}`.
-- Regla de Notificaciones ya existe (destino SQS `urban_alert_notificaciones`); la de Auditoria la crea el usuario a mano.
+- Regla de Notificaciones ya existe (destino SQS `urban_alert_notificaciones`); la de Auditoria (`urban-alert-auditoria-reporte-creado`) la crea este repo.
 - Sin AWS CLI, Terraform ni dotnet locales: validar con Podman. Hooks del arnés usan `powershell` (no instalado): protocolo a mano.
 
 ## Bloqueos / preguntas abiertas
 
-- Nombre de la regla de Auditoria y si la política adjunta incluye `events:PutTargets`/`RemoveTargets`.
+- Política del rol de GitHub con permisos de reglas (pendiente de que el usuario la adjunte).
