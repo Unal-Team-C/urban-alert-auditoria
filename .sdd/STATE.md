@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T019
+tarea_actual: T020
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T019: infra/base parte 1 (versions, backend auditoria/base.tfstate, providers con etiquetas, variables con validaciones, tfvars, network.tf con SG -lambda/-rds y subnet group).
+T020: infra/base/rds.tf y secrets.tf (RDS PG17 t4g.micro y secretos -db-writer/-db-reader con connection_string).
 
 ## Contexto de trabajo
 
@@ -25,6 +25,7 @@ T019: infra/base parte 1 (versions, backend auditoria/base.tfstate, providers co
 - Mientras haya tests de tareas pendientes que no compilan, verificar en una copia temporal del repo dentro del contenedor (`cp -r /src /w` y borrar esos archivos).
 - Con TESTCONTAINERS_RYUK_DISABLED quedan contenedores `postgres:17-alpine ... -c fsync=off` tras las pruebas: borrarlos (solo esos; `postgres` y `rabbitmq-server` sin fsync son del usuario).
 - `scripts/build-lambda-zips.sh` en el SDK tarda ~10 min la primera vez (apt zip + restore linux-x64); ejecutar en segundo plano.
+- Terraform en Podman: `podman run --rm -v "$PWD":/w -w /w -v ~/.cache/tf-podman:/cache -e TF_PLUGIN_CACHE_DIR=/cache docker.io/hashicorp/terraform:1.16.5 -chdir=infra/<stack> ...` (sin caché, init tarda > 5 min); lanzar en segundo plano.
 - AWS_ROLE_ARN es secreto de la organización; el repo no tiene variables (región fija en workflows). Límite de concurrencia de Lambda de la cuenta: 10 (sin reservas).
 
 ## Bloqueos / preguntas abiertas

@@ -109,3 +109,7 @@
 ## 2026-10-11 · 001-migracion-aws · T018 hecha
 - scripts/build-lambda-zips.sh: publish linux-x64 framework-dependent (sin apphost, ContinuousIntegrationBuild) de src/API → build/api.zip (6,2 MB) y src/Lambda → build/funciones.zip (3,9 MB); fechas y permisos fijos, orden estable; falla si > 50 MB. /build/ en .gitignore.
 - Verificación: dos ejecuciones desde cero en sdk:10.0 dan el mismo sha256 en ambos paquetes; shellcheck sin avisos; el paquete de la API incluye 001_audit_store.sql y runtimeconfig.
+
+## 2026-10-11 · 001-migracion-aws · T019 hecha
+- infra/base: versions (TF >= 1.10, aws ~> 6.0, random ~> 3.6), backend auditoria/base.tfstate con use_lockfile, proveedor con etiquetas (Service=auditoria, Stack=base), variables con validaciones (prefijo, backups ≥ 7, DLQ ≥ 14 días, visibilidad), tfvars, network.tf (SSM de la plataforma; SG -lambda con salida 443 y 5432 solo al SG -rds; SG -rds con entrada 5432 solo desde -lambda; subnet group en todas las subredes privadas). .terraform/ en .gitignore.
+- Verificación: terraform 1.16.5 init -backend=false + validate → Success.
