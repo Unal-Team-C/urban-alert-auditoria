@@ -53,3 +53,7 @@
 ## 2026-10-11 · 001-migracion-aws · T005 hecha
 - EventBridgeReporteCreadoTests: sobre real, estado código/número, igualdad con el registro de MassTransit, source/detail-type ajenos, detalle nulo/vacío/Guid.Empty/estado desconocido, cuerpo no JSON.
 - Verificación: el build de UnitTests falla solo por CS0103/CS0246 (EventBridgeReporteCreado, EventoInvalidoException no existen).
+
+## 2026-10-11 · 001-migracion-aws · T006 hecha
+- RegistroHandlerTests: lote mixto (inválido + store que lanza → exactamente esos messageId en BatchItemFailures, el resto se persiste y archiva), lote sin errores, log Information por evento con EventId/ReportId/MessageId, error con MessageId para mensajes inválidos.
+- Verificación: falla solo por compilación (namespace Auditoria.Lambda sin tipos).

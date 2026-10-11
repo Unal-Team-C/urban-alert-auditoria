@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T006
+tarea_actual: T007
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T006: tests/UnitTests/Lambda/RegistroHandlerTests.cs (RegistroHandler(IAuditStore, IAuditArchive, ILogger) → ManejarAsync(SQSEvent, ILambdaContext) → SQSBatchResponse).
+T007: tests/UnitTests/Auditoria/ModoNubeTests.cs (WebApplicationFactory con Autenticacion:Modo=Ninguna, Gateway:ExigirClave=false, Gateway:PathBase=/api/v1, fuera de Development).
 
 ## Contexto de trabajo
 
