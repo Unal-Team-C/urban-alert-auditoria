@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T021
+tarea_actual: T022
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T021: infra/base sqs.tf, iam.tf, logs.tf, outputs.tf.
+T022: infra/base/tests/base.tftest.hcl con mock_provider y lockfile con 3 plataformas.
 
 ## Contexto de trabajo
 

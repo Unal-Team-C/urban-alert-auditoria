@@ -118,3 +118,8 @@
 - rds.tf: PG 17 db.t4g.micro, gp3 20→50, una zona, privada, cifrada, backups según variable, manage_master_user_password, deletion_protection = !allow_destroy, copia final con sufijo.
 - secrets.tf: random_password writer/reader (keepers db_password_version), secretos urban-alert-auditoria-db-writer/-reader con username/password/host/port/dbname/connection_string (SSL Require, GSS off, pool 2), recovery 0.
 - Verificación: validate → Success.
+
+## 2026-10-11 · 001-migracion-aws · T021 hecha
+- sqs.tf: cola -eventos (SSE-SQS, 4 días, visibilidad 180 s con precondición ≥ 6 × timeout del registro, redrive a la DLQ con maxReceiveCount 5) y -eventos-dlq (14 días, redrive allow solo desde la principal).
+- iam.tf: roles -api/-registro/-init con políticas en línea -runtime (ENI, solo sus secretos —api: reader; registro: writer; init: los dos + maestro de RDS—, su grupo de logs; registro además SQS sobre su cola). logs.tf: grupos /aws/lambda/... 30 días. outputs.tf sin contraseñas.
+- Verificación: validate → Success; fmt -check sin diferencias.
