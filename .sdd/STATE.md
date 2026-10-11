@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T032
-estado_tarea: bloqueada
+tarea_actual: T033
+estado_tarea: hecha
 
 ## Siguiente paso
 
-T032: comprobaciones locales en verde (ver journal). Falta el permiso del usuario para publicar la rama aws-provisioning (git push -u origin aws-provisioning) y abrir el PR hacia main; tras el merge, T033 (primer Provision).
+T033: tras el merge del PR #1 (decisión del usuario), seguir el run de Provision en main (gh run list/view --log-failed), corregir con commits pequeños; después scripts/crear-reporte-y-auditar.sh <gateway> -n 20 y segundo Provision sin cambios.
 
 ## Contexto de trabajo
 
@@ -30,4 +30,4 @@ T032: comprobaciones locales en verde (ver journal). Falta el permiso del usuari
 
 ## Bloqueos / preguntas abiertas
 
-- T032: permiso del usuario para publicar la rama y abrir el PR. Después, el merge (decisión del usuario) lanza el primer Provision (T033).
+- T033 espera al merge del PR #1 (https://github.com/Unal-Team-C/urban-alert-auditoria/pull/1), decisión del usuario. El PR no tiene checks: los workflows solo corren en push a main.

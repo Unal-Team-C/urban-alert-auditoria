@@ -171,3 +171,6 @@
 ## 2026-10-11 · 001-migracion-aws · T032 comprobación local
 - UnitTests 56/56; build 0 errores; terraform test base 7, servicio 5, eventos 3, rutas 3 (todos en verde); fmt, scripts/tests/run.sh, actionlint y shellcheck en verde.
 - Integración: 11/11 en una ejecución completa; otras dos ejecuciones con «Connection reset by peer» intermitentes de la red rootless de Podman (también tras una conexión correcta). Añadido PostgresListo (espera una conexión TCP real antes de usar el contenedor; cubre el reinicio tras initdb de la imagen oficial) en el fixture y en las pruebas del init. Se confirma en el job test de CI (Docker).
+
+## 2026-10-11 · 001-migracion-aws · T032 hecha
+- Con permiso del usuario: rama aws-provisioning publicada y PR #1 abierto hacia main (https://github.com/Unal-Team-C/urban-alert-auditoria/pull/1). Sin checks en el PR (workflows solo en main).
