@@ -19,7 +19,8 @@ public sealed record RespuestaInit([property: JsonPropertyName("ok")] bool Ok);
 // Nunca devuelve ni registra cadenas de conexión ni contraseñas.
 public sealed class InitHandler
 {
-    public async Task<RespuestaInit> ManejarAsync(ILambdaContext contexto)
+    // La entrada se ignora (Provision envía {}). Con un solo parámetro, el runtime lo trataría como la entrada.
+    public async Task<RespuestaInit> ManejarAsync(Stream entrada, ILambdaContext contexto)
     {
         IConfiguration configuracion = Arranque.Servicios.GetRequiredService<IConfiguration>();
         ILogger<InitHandler> logger = Arranque.Servicios.GetRequiredService<ILogger<InitHandler>>();

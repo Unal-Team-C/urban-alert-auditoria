@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T026
+tarea_actual: T027
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T026: scripts/check-platform.sh (+ bus), scripts/run-init.sh y pruebas con aws simulado (scripts/tests/run.sh).
+T027: scripts/smoke-gateway-auditoria.sh y su prueba con curl/aws simulados.
 
 ## Contexto de trabajo
 

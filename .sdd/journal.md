@@ -141,3 +141,8 @@
 ## 2026-10-11 · 001-migracion-aws · T025 hecha
 - infra/rutas: integración AWS_PROXY 2.0 → función api, rutas GET /api/v1/auditoria/reportes/{reportId} y /integridad (NONE), aws_lambda_permission AllowSharedGatewayAuditoriaRoutes limitado a <exec-arn>/*/GET/api/v1/auditoria/reportes/*; salidas gateway_url y routes.
 - Verificación: init -lockfile=readonly, validate, terraform test 3/3, fmt -check -recursive infra sin diferencias.
+
+## 2026-10-11 · 001-migracion-aws · T026 hecha
+- scripts/check-platform.sh (contrato SSM completo + describe-event-bus del bus de infra/eventos/terraform.tfvars, mensajes por causa), scripts/run-init.sh (espera, invoca con {}, muestra la cola del log, falla con FunctionError o respuesta distinta de {"ok":true}, sin imprimir la respuesta), scripts/tests/run.sh + test-check-platform.sh (6 casos) + test-run-init.sh (4 casos, comprueba que nada secreto sale).
+- Corrección de T016: InitHandler.ManejarAsync(Stream, ILambdaContext): con un solo parámetro el runtime de .NET lo trata como la entrada.
+- Verificación: scripts/tests/run.sh en verde; shellcheck sin avisos; build 0 errores; UnitTests en verde.
