@@ -90,3 +90,8 @@
 ## 2026-10-11 · 001-migracion-aws · T014 hecha
 - SecretosConexion: IConfigurationSource que lee ConnectionStrings:<X>SecretArn de las fuentes anteriores, obtiene connection_string una vez y la expone como ConnectionStrings:<X>; errores sin el contenido del secreto. Program.cs la añade justo tras CreateBuilder.
 - Verificación (copia temporal sin RegistroHandlerTests): UnitTests 50/50.
+
+## 2026-10-11 · 001-migracion-aws · T015 hecha
+- AuditDatabaseInitializer.InicializarAsync: CREATE/ALTER ROLE audit_writer/audit_reader (LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE, contraseña escapada) y 001_audit_store.sql como recurso embebido, en una transacción.
+- Ajuste de T010: el cambio de contraseña se comprueba por el hash de pg_authid (el pg_hba de la imagen confía en conexiones locales).
+- Verificación local (Podman, Testcontainers por el socket): AuditDatabaseInitializerTests 4/4 con --filter; la suite completa da 'Connection reset by peer' intermitentes al arrancar varios contenedores (también en las pruebas existentes, no relacionado con el cambio). Se confirmará en el job test de CI.

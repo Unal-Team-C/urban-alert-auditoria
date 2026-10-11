@@ -20,6 +20,8 @@
 
   <ItemGroup>
     <None Include="Persistencia\Migraciones\001_audit_store.sql" CopyToOutputDirectory="PreserveNewest" />
+    <!-- La función de init lo lee del ensamblado (AuditDatabaseInitializer), sin depender de rutas del paquete. -->
+    <EmbeddedResource Include="Persistencia\Migraciones\001_audit_store.sql" LogicalName="Infrastructure.Persistencia.Migraciones.001_audit_store.sql" />
   </ItemGroup>
 
   <PropertyGroup>

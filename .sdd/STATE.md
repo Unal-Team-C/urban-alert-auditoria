@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T015
+tarea_actual: T016
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T015: AuditDatabaseInitializer (roles + 001_audit_store.sql embebido, una transacción) y pruebas de integración de T010.
+T016: src/Lambda (Arranque, RegistroHandler, InitHandler) para que pasen T006 y T011.
 
 ## Contexto de trabajo
 
@@ -20,6 +20,10 @@ T015: AuditDatabaseInitializer (roles + 001_audit_store.sql embebido, una transa
 - Bus `arn:aws:events:us-east-2:348364742283:event-bus/urban-alert-bus-eventos` (manual). Evento: source `urban-alert.reportes`, detail-type `ReporteCreado`, detail `{idEvento, reporte{id, estado, idCoordenada, idUsuario, fecha}}`.
 - Regla de Notificaciones ya existe (destino SQS `urban_alert_notificaciones`); la de Auditoria (`urban-alert-auditoria-reporte-creado`) la crea este repo.
 - Sin AWS CLI, Terraform ni dotnet locales: validar con Podman. Hooks del arnés usan `powershell` (no instalado): protocolo a mano.
+
+- Integración local con Podman: `podman run --rm --network host --security-opt label=disable -v /run/user/501/podman/podman.sock:/var/run/docker.sock -e TESTCONTAINERS_RYUK_DISABLED=true -e TESTCONTAINERS_HOST_OVERRIDE=localhost ... dotnet test tests/IntegrationTests`. Con varios contenedores a la vez hay «Connection reset by peer» intermitentes (red de Podman); por clase con `--filter` pasa. CI decide.
+- Mientras haya tests de tareas pendientes que no compilan, verificar en una copia temporal del repo dentro del contenedor (`cp -r /src /w` y borrar esos archivos).
+- AWS_ROLE_ARN es secreto de la organización; el repo no tiene variables (región fija en workflows). Límite de concurrencia de Lambda de la cuenta: 10 (sin reservas).
 
 ## Bloqueos / preguntas abiertas
 

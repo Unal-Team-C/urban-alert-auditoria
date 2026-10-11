@@ -55,10 +55,14 @@ public sealed class AuditDatabaseInitializerTests : IAsyncLifetime
             VALUES (gen_random_uuid(), 'reporte.creado', 1, now(), gen_random_uuid(), '{}', repeat('0', 64), repeat('b', 64))
             """);
 
+        const string Hash = "SELECT rolpassword FROM pg_authid WHERE rolname = 'audit_writer'";
+        object? antes = await EscalarAsync(_database.GetConnectionString(), Hash);
+
         await InicializarAsync("escritor-2", "lector-2");
 
+        // El pg_hba de la imagen confía en las conexiones locales, así que la contraseña se comprueba por su hash.
         Assert.Equal(1L, await EscalarAsync(ComoRol("audit_reader", "lector-2"), "SELECT count(*) FROM audit_events"));
-        await Assert.ThrowsAsync<PostgresException>(() => EscalarAsync(ComoRol("audit_writer", "escritor-1"), "SELECT 1"));
+        Assert.NotEqual(antes, await EscalarAsync(_database.GetConnectionString(), Hash));
     }
 
     [Fact]
