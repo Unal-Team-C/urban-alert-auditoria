@@ -7,12 +7,12 @@
 
 feature_activa: 001-migracion-aws
 fase: implement
-tarea_actual: T010
+tarea_actual: T011
 estado_tarea: hecha
 
 ## Siguiente paso
 
-T010: tests/IntegrationTests/Auditoria/AuditDatabaseInitializerTests.cs (Testcontainers PostgreSQL vacío).
+T011: tests/IntegrationTests/Auditoria/RegistroIntegracionTests.cs (RegistroHandler + AuditStore reales; duplicado y 20 eventos en 2 tareas paralelas).
 
 ## Contexto de trabajo
 

@@ -69,3 +69,8 @@
 ## 2026-10-11 · 001-migracion-aws · T009 hecha
 - SecretosConexionTests: con ARN expone ConnectionStrings:AuditWriter desde connection_string; sin ARN no crea el cliente y conserva la cadena local; secreto sin connection_string (JSON o texto) → InvalidOperationException que nombra la clave y no contiene el secreto.
 - Verificación: falla solo por compilación (Infrastructure.Configuracion no existe).
+
+## 2026-10-11 · 001-migracion-aws · T010 hecha
+- AuditDatabaseInitializerTests (contenedor propio postgres:17-alpine, como la RDS): base vacía → roles sin privilegios elevados y esquema; segunda ejecución conserva datos y cambia contraseñas (la antigua deja de valer); lector sin INSERT (42501); UPDATE/DELETE de eventos rechazados.
+- API prevista: AuditDatabaseInitializer.InicializarAsync(adminConnectionString, writerPassword, readerPassword, ct).
+- Verificación: falla solo por compilación (CS0103).
