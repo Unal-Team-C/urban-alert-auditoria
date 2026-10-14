@@ -40,8 +40,12 @@ public static class AuditDatabaseInitializer
         bool creado = await existe.ExecuteScalarAsync(cancellationToken) is not null;
 
         // CREATE/ALTER ROLE no admiten parámetros: la contraseña va como literal escapado. El nombre del rol es constante.
+        // Los atributos se fijan al crear el rol. Al sincronizarlo solo se cambia la contraseña: desde PostgreSQL 16
+        // nombrar SUPERUSER/NOSUPERUSER en un ALTER exige ser superusuario, y el administrador de RDS no lo es.
         string literal = "'" + password.Replace("'", "''", StringComparison.Ordinal) + "'";
-        string sql = $"{(creado ? "ALTER" : "CREATE")} ROLE {rol} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD {literal}";
+        string sql = creado
+            ? $"ALTER ROLE {rol} WITH LOGIN PASSWORD {literal}"
+            : $"CREATE ROLE {rol} WITH LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE PASSWORD {literal}";
         await using NpgsqlCommand command = new(sql, connection, transaction);
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
