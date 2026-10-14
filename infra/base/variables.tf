@@ -107,3 +107,9 @@ variable "dlq_retention_s" {
 variable "log_retention_days" {
   type = number
 }
+
+variable "pausada" {
+  description = "Only the Pausar workflow sets it to true: stops the RDS instance (data and storage are kept). Provision leaves it false, which starts a stopped instance before deploying."
+  type        = bool
+  default     = false
+}
