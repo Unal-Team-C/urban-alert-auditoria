@@ -1,0 +1,80 @@
+# Pause of urban-alert-auditoria without deprovisioning: stops billing and keeps every piece of data.
+# Only the RDS instance costs money while idle, so this stops it (Terraform: aws_rds_instance_state). The Lambda
+# functions, the queue mapping, the rule and the routes stay: they cost nothing without traffic, and while paused
+# Reportes publishes no events. Usually run by the Pausar workflow of urban-alert-plataforma; Provision resumes it.
+name: Pausar
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Escribe urban-alert-auditoria para confirmar la pausa (los datos se conservan)"
+        required: true
+        type: string
+
+# Same group as Provision and Deprovision: runs touching this infrastructure never overlap.
+concurrency:
+  group: urban-alert-auditoria-aws
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  TF_VERSION: 1.16.5
+  TF_IN_AUTOMATION: "true"
+  AWS_REGION: us-east-2
+
+jobs:
+  pausar:
+    name: Pause urban-alert-auditoria
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check confirmation
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          REF: ${{ github.ref }}
+        run: |
+          if [ "$CONFIRM" != "urban-alert-auditoria" ]; then
+            echo "::error::Confirmation missing: type urban-alert-auditoria. Nothing was changed."
+            exit 1
+          fi
+          if [ "$REF" != "refs/heads/main" ]; then
+            echo "::error::Run this workflow on main (the AWS role only trusts main). Nothing was changed."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Stop the database (base with pausada = true; protection and data stay)
+        run: |
+          terraform -chdir=infra/base init -input=false
+          terraform -chdir=infra/base plan -input=false -no-color -out=tfplan -var pausada=true | tee plan.txt
+          terraform -chdir=infra/base apply -input=false tfplan
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### urban-alert-auditoria en pausa"
+            echo "- Plan de base: \`$(grep -E '^(Plan:|No changes)' plan.txt 2>/dev/null || echo 'no disponible')\`"
+            echo "- RDS \`urban-alert-auditoria-db\` detenida con sus datos; funciones, cola, regla y rutas sin cambios."
+            echo "- Para volver: workflow **Reanudar** de urban-alert-plataforma (o Provision de este repo, ya sin pausa)."
+          } >> "$GITHUB_STEP_SUMMARY"
