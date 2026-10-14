@@ -69,6 +69,24 @@ public sealed class AuditDatabaseInitializerTests : IAsyncLifetime
         Assert.NotEqual(antes, await EscalarAsync(_database.GetConnectionString(), Hash));
     }
 
+    // Como en RDS: el administrador no es superusuario (CREATEROLE y dueño de la base). La segunda ejecución sincroniza
+    // los roles con ALTER ROLE, que en PostgreSQL 16+ fallaba con 42501 si nombraba NOSUPERUSER (Provision 38500517187).
+    [Fact]
+    public async Task AdministradorSinSuperusuario_PuedeRepetirLaInicializacion()
+    {
+        await EscalarAsync(_database.GetConnectionString(),
+            "CREATE ROLE rds_admin WITH LOGIN CREATEROLE CREATEDB NOSUPERUSER PASSWORD 'admin_rds'");
+        await EscalarAsync(_database.GetConnectionString(), "ALTER DATABASE urbanalert_auditoria OWNER TO rds_admin");
+        string administrador = ComoRol("rds_admin", "admin_rds");
+
+        await AuditDatabaseInitializer.InicializarAsync(administrador, "escritor-1", "lector-1", CancellationToken.None);
+        await AuditDatabaseInitializer.InicializarAsync(administrador, "escritor-2", "lector-2", CancellationToken.None);
+
+        Assert.Equal(0L, await EscalarAsync(ComoRol("audit_writer", "escritor-2"), "SELECT count(*) FROM audit_events"));
+        Assert.False((bool)(await EscalarAsync(_database.GetConnectionString(),
+            "SELECT bool_or(rolsuper OR rolcreaterole OR rolcreatedb) FROM pg_roles WHERE rolname IN ('audit_writer', 'audit_reader')"))!);
+    }
+
     [Fact]
     public async Task Lector_NoPuedeInsertar()
     {
