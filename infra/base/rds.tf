@@ -32,6 +32,8 @@ resource "aws_db_instance" "this" {
 
 # Pause without deprovisioning (Pausar / Reanudar workflows of urban-alert-plataforma). AWS restarts a stopped
 # instance after 7 days; the daily Mantener pausa workflow of the platform stops it again.
+# It only stops: from "stopped" it fails (provider 6.68 waits for "available" before starting), so Provision
+# starts the instance with scripts/arrancar-rds.sh before this stack.
 resource "aws_rds_instance_state" "this" {
   identifier = aws_db_instance.this.identifier
   state      = var.pausada ? "stopped" : "available"
