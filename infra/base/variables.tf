@@ -107,9 +107,3 @@ variable "dlq_retention_s" {
 variable "log_retention_days" {
   type = number
 }
-
-variable "pausada" {
-  description = "Only the Pausar workflow sets it to true: stops the RDS instance (data and storage are kept). Provision leaves it false; it starts a stopped instance first with scripts/arrancar-rds.sh, because this resource cannot start one."
-  type        = bool
-  default     = false
-}

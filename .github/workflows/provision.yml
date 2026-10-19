@@ -149,10 +149,9 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      # After a pause the instance is stopped. aws_rds_instance_state cannot start it (it waits for "available"
-      # first), so it is started here; then its state matches the configuration and Terraform changes nothing.
+      # After a pause the instance is stopped (Pausar stops it with the same script).
       - name: Start the RDS instance if it is stopped (after a pause)
-        run: scripts/arrancar-rds.sh urban-alert-auditoria-db
+        run: scripts/rds-estado.sh arrancar urban-alert-auditoria-db
 
       - name: Apply base (RDS, secrets, queues, security groups, roles, logs)
         id: base
